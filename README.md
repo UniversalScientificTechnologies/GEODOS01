@@ -1,5 +1,5 @@
-# AIRDOSC01
-*Scintillation detector of ionizing radiation with a full production specification available. The device can be further modified according to specific requirements. Character of its construction makes it especially suitable for placement into UAVs.*
+# GEODOS01A
+*Open-source scintillation detector of ionizing radiation. The device can be further modified according to specific requirements. Character of its construction makes it especially suitable for placement into mountaints to in-field measurement*
 
 
 ![AIRDOSC01A front panel](/doc/src/img/AIRDOSC01A_box_front.jpg "AIRDOS front panel")
@@ -8,13 +8,13 @@
 **Technical parameters are following:** 
 
 * Detection element: scintillating crystal integrated with SiPM
-* Autonomous operation: battery
+* Autonomous operation: solar panel
 * Data memory: SD card
 * Record’s content: energy and time of each event
 * Record’s periodicity: 10 s (dead time 2 s)
 * Time resolution: 20 us
 * Accuracy of event’s time: 500 ns
-* Dimensions: 57 x 107 x 167 mm
+* Dimensions:
 * Weight in operating condition: 1 kg
 * Open-source HW and SW: YES
 * Device status indicator: LED on panel
