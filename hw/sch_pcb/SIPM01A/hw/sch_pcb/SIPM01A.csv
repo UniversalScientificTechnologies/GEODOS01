@@ -1,0 +1,7 @@
+"ID";"Určovatel";"Pouzdro";"Množství";"Určení";"Tisk rohového razítka";
+1;"M1,M2,M3,M4";"MountingHole_3mm";4;"HOLE";;;
+2;"U1";"ArrayC-60035-4P-BGA";1;"ARRAYC-60035-4P-BGA";;;
+3;"C1,C4,C7,C10";"FIR_1806";4;"1u5/50V - NFM41PC155B1H3L";;;
+4;"C2,C5,C3,C6";"TantalC_SizeC_Reflow";4;"CP";;;
+5;"J5,J6";"SMD_1_2_4x2";2;"CONN_2";;;
+6;"J1,J2,J3,J4,J7";"Straight_1x01";5;"HEADER_1x01";;;
