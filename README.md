@@ -7,17 +7,20 @@
 
 **Technical parameters are following:** 
 
-* Detection element: scintillating crystal integrated with SiPM
-* Autonomous operation: solar panel
+* Detection element: scintillation crystal NaI(Tl) 10 mm diameter 20 mm lenght integrated with SiPM detector
+* Power source: solar panel
 * Data memory: SD card
 * Record’s content: energy and time of each event
-* Record’s periodicity: 10 s (dead time 2 s)
+* Record’s periodicity: 10 s (maximal dead time 2 s)
 * Time resolution: 20 us
 * Accuracy of event’s time: 500 ns
-* Dimensions:
-* Weight in operating condition: 1 kg
-* Open-source HW and SW: YES
-* Device status indicator: LED on panel
+* Energy range: 0.3 to 1 MeV (0,2 MeV resolution) 
+* Open-source HW and SW
+* Device status indicator type LED
+* Uniterrupted measurement interval 365 days minimum
+* LoRa connection to IoT network
+* Weather resistivity IP 65
+
 
 **Device block diagram**
 ![AIRDOSC01A block diagram](hw/sch_pcb/AIRDOSC01A_block.png)
