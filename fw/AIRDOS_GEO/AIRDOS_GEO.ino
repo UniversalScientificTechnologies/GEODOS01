@@ -333,41 +333,22 @@ void setup()
     Wire.endTransmission();
   }
   
-  // Initiation of GPS
-/*
-  {
-    // Switch off Galileo and GLONASS; UBX-CFG-GNSS (6)+4+8*7+(2)=68 configuration bytes
-    const char cmd[68]={0xB5, 0x62, 0x06, 0x3E, 0x3C, 0x00, 0x00, 0x20, 0x20, 0x07, 0x00, 0x08, 0x10, 0x00, 0x01, 0x00, 0x01, 0x01, 0x01, 0x01, 0x03, 0x00, 0x01, 0x00, 0x01, 0x01, 0x02, 0x04, 0x08, 0x00, 0x00, 0x00, 0x01, 0x01, 0x03, 0x08, 0x10, 0x00, 0x00, 0x00, 0x01, 0x01, 0x04, 0x00, 0x08, 0x00, 0x00, 0x00, 0x01, 0x03, 0x05, 0x00, 0x03, 0x00, 0x00, 0x00, 0x01, 0x05, 0x06, 0x08, 0x0E, 0x00, 0x00, 0x00, 0x01, 0x01, 0x53, 0x1F};
-    for (int n=0;n<(68);n++) Serial1.write(cmd[n]); 
-  }          
-  {
-    // airborne <2g; UBX-CFG-NAV5 (6)+36+(2)=44 configuration bytes
-    const char cmd[44]={0xB5, 0x62 ,0x06 ,0x24 ,0x24 ,0x00 ,0xFF ,0xFF ,0x07 ,0x03 ,0x00 ,0x00 ,0x00 ,0x00 ,0x10 ,0x27 , 0x00 ,0x00 ,0x05 ,0x00 ,0xFA ,0x00 ,0xFA ,0x00 ,0x64 ,0x00 ,0x5E ,0x01 ,0x00 ,0x3C ,0x00 ,0x00 , 0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x85 ,0x2A};
-    for (int n=0;n<(44);n++) Serial1.write(cmd[n]); 
-  }
-*/
-  {
-    // switch to UTC time; UBX-CFG-RATE (6)+6+(2)=14 configuration bytes
-    const char cmd[14]={0xB5 ,0x62 ,0x06 ,0x08 ,0x06 ,0x00 ,0xE8 ,0x03 ,0x01 ,0x00 ,0x00 ,0x00 ,0x00 ,0x37};
-    for (int n=0;n<(14);n++) Serial1.write(cmd[n]); 
-  }
-
   wdt_reset(); //Reset WDT
 }
 
 void loop()
 {
-  uint16_t buffer[RANGE];
-  uint32_t hit_time[EVENTS];
-  uint8_t hit_channel[EVENTS];
+  uint16_t buffer[RANGE];       // buffer for histogram
+  uint32_t hit_time[EVENTS];    // time of events
+  uint8_t hit_channel[EVENTS];  // energy of events
 
   for(int i=0; i<(GPSdelay); i++)  // measurements between GPS aquisition
   {
-    for(int n=0; n<RANGE; n++)
+    for(int n=0; n<RANGE; n++) // clear histogram
     {
       buffer[n]=0;
     }
-    uint16_t hit_count = 0;
+    uint16_t hit_count = 0;    // clear events
   
     // measurement of ADC offset
     ADMUX = (analog_reference << 6) | 0b10001; // Select +A1,-A1 for offset correction
@@ -610,8 +591,6 @@ void loop()
   wdt_reset(); //Reset WDT
 
   // GPS **********************
-//  if (flux_long>TRESHOLD)
-//  if (false)
   {
       // make a string for assembling the data to log:
       String dataString = "";
@@ -620,17 +599,46 @@ void loop()
 
     digitalWrite(GPSpower, HIGH); // GPS Power ON
     delay(100);
+    {
+      // switch to UTC time; UBX-CFG-RATE (6)+6+(2)=14 configuration bytes
+      const char cmd[14]={0xB5 ,0x62 ,0x06 ,0x08 ,0x06 ,0x00 ,0xE8 ,0x03 ,0x01 ,0x00 ,0x00 ,0x00 ,0x00 ,0x37};
+      for (int n=0;n<(14);n++) Serial1.write(cmd[n]); 
+    }
     // flush serial buffer
     while (Serial1.available()) Serial1.read();
 
+    boolean flag = false;
     char incomingByte; 
     int messages = 0;
     uint32_t nomessages = 0;
+
+    while(true)
+    {
+      if (Serial1.available()) 
+      {
+        // read the incoming byte:
+        incomingByte = Serial1.read();
+        nomessages = 0;
+        
+        if (incomingByte == '$') {messages++;   wdt_reset();}; // Prevent endless waiting
+        if (messages > 300) break; // more than 26 s
+
+        if (flag && (incomingByte == '*')) break;
+        flag = false;
+
+        if (incomingByte == 'A') flag = true;   // Waiting for FIX
+      }
+      else
+      {
+        nomessages++;  
+        if (nomessages > GPSerror) break; // preventing of forever waiting
+      }
+    }
     
     // make a string for assembling the NMEA to log:
     dataString = "";
 
-    boolean flag = false;
+    flag = false;
     messages = 0;
     nomessages = 0;
     while(true)
@@ -645,11 +653,12 @@ void loop()
         if (messages > MSG_NO)
         {
           readRTC();
-           
+                
           dataString += "$TIME,";
           dataString += String(tm); 
           dataString += ".";
           dataString += String(tm_s100); 
+          
           break;
         }
         
@@ -685,7 +694,7 @@ void loop()
         if (dataFile) 
         {
           digitalWrite(LED_red, HIGH);  // Blink for Dasa
-          dataFile.println(dataString); // write to SDcard (800 ms)     
+          dataFile.println(dataString);  // write to SDcard (800 ms)     
           digitalWrite(LED_red, LOW);          
           dataFile.close();
         }  
