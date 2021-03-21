@@ -1,6 +1,6 @@
 #define DEBUG // Please comment it if you are not debugging
-String githash = "0766a8b";
-String FWversion = "GEO";
+String githash = "51832f3";
+String FWversion = "GEO1";
 #define ZERO 253  // ADC DC offset
 #define RANGE 9   // histogram range
 #define EVENTS 500 // maximal number of recorded events
@@ -621,7 +621,7 @@ void loop()
         nomessages = 0;
         
         if (incomingByte == '$') {messages++;   wdt_reset();}; // Prevent endless waiting
-        if (messages > 300) break; // more than 26 s
+        if (messages > 600) break; // more than 50 s
 
         if (flag && (incomingByte == '*')) break;
         flag = false;
