@@ -1,7 +1,7 @@
 #define DEBUG // Please comment it if you are not debugging
 String githash = "51832f3";
 String FWversion = "GEO1";
-#define ZERO 253  // ADC DC offset
+#define ZERO 256  // ADC DC offset
 #define RANGE 9   // histogram range
 #define EVENTS 500 // maximal number of recorded events
 
