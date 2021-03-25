@@ -30,7 +30,7 @@
 
 The core of the detector  - scintillation crystal with [SiPM detector](https://en.wikipedia.org/wiki/Silicon_photomultiplier).
 
-![Scintillation detector](hw/sch_pcb/GEODOS01A_sensor.jpg)
+![Scintillation detector](/doc/src/img/GEODOS01A_sensor.jpg)
 
 ### Production data of used electronic modules
 
