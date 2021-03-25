@@ -5,11 +5,11 @@
 ![GEODOS01A prototype powered from panel](/doc/src/img/GEODOS01A_prototype.jpg "GEODOS01A prototype")
 
 
-**Technical parameters are following:**
+### Technical parameters
 
-* Detection element: scintillation crystal NaI(Tl) 10 mm diameter 20 mm lenght integrated with SiPM detector
+* Detection element: scintillation crystal NaI(Tl) 10 mm diameter 20 mm length integrated with SiPM detector
 * Power source: solar panel
-* Backup power source: rechargable 18650 Li-ion cell 
+* Backup power source: rechargable 18650 Li-ion cell
 * Data memory: SD card
 * Record’s content: energy and time of each event
 * Record’s periodicity: 10 s (maximal dead time 2 s)
@@ -23,11 +23,16 @@
 * Weather resistivity IP 65
 
 
-**Device block diagram**
+### Device block diagram
 ![GEODOS01A block diagram](hw/sch_pcb/GEODOS01A_block.png)
 
 
-**Production data of electronic modules**
+
+The core of the detector  - scintillation crystal with [SiPM detector](https://en.wikipedia.org/wiki/Silicon_photomultiplier).
+
+![Scintillation detector](hw/sch_pcb/GEODOS01A_sensor.jpg)
+
+### Production data of used electronic modules
 
 * [SIPMPOWER01A](https://github.com/UniversalScientificTechnologies/AIRDOSC01/tree/AIRDOSC01A/hw/sch_pcb/SIPMPOWER01A)
 * [SIPM01B](https://github.com/UniversalScientificTechnologies/AIRDOSC01/tree/AIRDOSC01A/hw/sch_pcb/SIPM01B/hw/sch_pcb)
