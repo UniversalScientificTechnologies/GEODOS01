@@ -2,7 +2,7 @@
 *Open-source scintillation detector of ionizing radiation. The device can be further modified according to specific requirements. Character of its construction makes it especially suitable for placement into mountaints to in-field measurement*
 
 
-![GEODOS01A prototype powered from panel](/doc/src/img/GEODOS01A_prototype.jpg "GEODOS01A prototype")
+![Solar powered GEODOS01A](/doc/src/img/GEODOS01A.jpg "GEODOS01A prototype")
 
 
 ### Technical parameters
