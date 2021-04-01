@@ -7,9 +7,9 @@ module support_screw_end(Nuts, Wall, Height){
 	translate([-(Nuts-1)/2*MLAB_G + nut*MLAB_G, -1.5/2*INCH-Wall+6, Height/2]) 
 			rotate([90,0,0]) cylinder(10, 3.7/2, 3.7/2);
 	translate([-(Nuts-1)/2*MLAB_G + nut*MLAB_G, -1.5/2*INCH-Wall+10+2, Height/2])
-			rotate([90,0,0]) cylinder(10, 7.0/2, 7.0/2);
+			rotate([90,0,0]) cylinder(10, 7.8/2, 7.8/2);
 	translate([-(Nuts-1)/2*MLAB_G + nut*MLAB_G, -1.5/2*INCH-Wall-1, Height/2])
-			rotate([90,0,0]) cylinder(100, 7.0/2, 7.0/2,$fn=6);
+			rotate([90,0,0]) cylinder(100, 7.8/2, 7.8/2,$fn=6);
 	}
 }
 
@@ -42,7 +42,7 @@ module MlabSolarHolder(){
 
 module SolarHolder(){
     width = 55;
-    length = 90;
+    length = 70;
     angle = 35;
     
 	difference(){
@@ -50,7 +50,9 @@ module SolarHolder(){
         rotate([angle,0,0]) translate([-1,0,0]) cube([width*2, length*2, length*2]);
         
         rotate([-90,0,0]) translate([width/2,0,0]) support_screw_end(3, -17.1, length);
-        #rotate([-90,0,0]) translate([width/2,0,0]) support_screw_end(1, -30.1, length);
+        //#rotate([-90,0,0]) translate([width/2,0,0]) support_screw_end(1, -30.1, length);
+        translate([width/2, length/2, -10]) rotate([0,0,0]) cylinder(100, 8.6/2, 8.6/2);
+
     }
 }
 

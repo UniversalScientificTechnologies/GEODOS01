@@ -96,8 +96,8 @@ boolean SDClass::begin(uint32_t clock, uint8_t csPin) {
 
 #define CHANNELS 512    // number of channels in buffer for histogram, including negative numbers
 #define GPSerror 700000 // number of cycles for waitig for GPS in case of GPS error 
-#define GPSdelay 5      // number of measurements between obtaining GPS position
-#define TRESHOLD 3*GPSdelay  // ionising radiation flux treshold for obtaining GPS position
+#define GPSdelay 2700   // number of measurements between obtaining GPS position
+                        // 2700 = cca 12 h
 
 uint16_t count = 0;
 uint32_t serialhash = 0;
@@ -342,7 +342,133 @@ void loop()
   uint32_t hit_time[EVENTS];    // time of events
   uint8_t hit_channel[EVENTS];  // energy of events
 
-  for(int i=0; i<(GPSdelay); i++)  // measurements between GPS aquisition
+  wdt_reset(); //Reset WDT
+
+  // GPS **********************
+  {
+      // make a string for assembling the data to log:
+      String dataString = "";
+
+#define MSG_NO 12    // number of logged NMEA messages
+
+    digitalWrite(GPSpower, HIGH); // GPS Power ON
+    delay(100);
+    {
+      // switch to UTC time; UBX-CFG-RATE (6)+6+(2)=14 configuration bytes
+      const char cmd[14]={0xB5 ,0x62 ,0x06 ,0x08 ,0x06 ,0x00 ,0xE8 ,0x03 ,0x01 ,0x00 ,0x00 ,0x00 ,0x00 ,0x37};
+      for (int n=0;n<(14);n++) Serial1.write(cmd[n]); 
+    }
+    // flush serial buffer
+    while (Serial1.available()) Serial1.read();
+
+    boolean flag = false;
+    char incomingByte; 
+    int messages = 0;
+    uint32_t nomessages = 0;
+
+    while(true)
+    {
+      if (Serial1.available()) 
+      {
+        // read the incoming byte:
+        incomingByte = Serial1.read();
+        nomessages = 0;
+        
+        if (incomingByte == '$') {messages++;   wdt_reset();}; // Prevent endless waiting
+        if (messages > 600) break; // more than 50 s
+
+        if (flag && (incomingByte == '*')) break;
+        flag = false;
+
+        if (incomingByte == 'A') flag = true;   // Waiting for FIX
+      }
+      else
+      {
+        nomessages++;  
+        if (nomessages > GPSerror) break; // preventing of forever waiting
+      }
+    }
+    
+    // make a string for assembling the NMEA to log:
+    dataString = "";
+
+    flag = false;
+    messages = 0;
+    nomessages = 0;
+    while(true)
+    {
+      if (Serial1.available()) 
+      {
+        // read the incoming byte:
+        incomingByte = Serial1.read();
+        nomessages = 0;
+        
+        if (incomingByte == '$') {flag = true; messages++;};
+        if (messages > MSG_NO)
+        {
+          readRTC();
+                
+          dataString += "$TIME,";
+          dataString += String(tm); 
+          dataString += ".";
+          dataString += String(tm_s100); 
+          
+          break;
+        }
+        
+        // say what you got:
+        if (flag && (messages<=MSG_NO)) dataString+=incomingByte;
+      }
+      else
+      {
+        nomessages++;  
+        if (nomessages > GPSerror) break; // preventing of forever waiting
+      }
+    }
+    digitalWrite(GPSpower, LOW); // GPS Power OFF
+
+    {
+        DDRB = 0b10111110;
+        PORTB = 0b00001111;  // SDcard Power ON
+        
+        // make sure that the default chip select pin is set to output
+        // see if the card is present and can be initialized:
+        if (!SD.begin(SS)) 
+        {
+          Serial.println("#Card failed, or not present");
+          // don't do anything more:
+          return;
+        }
+        
+        // open the file. note that only one file can be open at a time,
+        // so you have to close this one before opening another.
+        File dataFile = SD.open("datalog.txt", FILE_WRITE);
+        
+        // if the file is available, write to it:
+        if (dataFile) 
+        {
+          digitalWrite(LED_red, HIGH);  // Blink for Dasa
+          dataFile.println(dataString);  // write to SDcard (800 ms)     
+          digitalWrite(LED_red, LOW);          
+          dataFile.close();
+        }  
+        // if the file isn't open, pop up an error:
+        else 
+        {
+          Serial.println("#error opening datalog.txt");
+        }
+        
+        DDRB = 0b10011110;
+        PORTB = 0b00000001;  // SDcard Power OFF
+    }  
+#ifdef DEBUG
+    Serial.println(dataString);  // print to terminal (additional 700 ms)
+    wdt_reset(); //Reset WDT
+#endif
+  }
+
+
+  for(uint16_t i=0; i<(GPSdelay); i++)  // measurements between GPS aquisition
   {
     for(int n=0; n<RANGE; n++) // clear histogram
     {
@@ -400,7 +526,7 @@ void loop()
     sbi(ADCSRA, ADIF);                  // reset interrupt flag from ADC
     
     // dosimeter integration
-    for (uint32_t i=0; i<65535*2; i++)    // cca 8 s
+    for (uint32_t i=0; i<65535*4; i++)    // cca 16 s
     //for (uint32_t i=0; i<10000; i++)    // faster for testing
     {
       wdt_reset(); //Reset WDT
@@ -586,130 +712,5 @@ void loop()
       Serial.println(dataString);   // print to terminal (additional 700 ms in DEBUG mode)
       digitalWrite(LED_red, LOW);                
     }    
-  }
-
-  wdt_reset(); //Reset WDT
-
-  // GPS **********************
-  {
-      // make a string for assembling the data to log:
-      String dataString = "";
-
-#define MSG_NO 12    // number of logged NMEA messages
-
-    digitalWrite(GPSpower, HIGH); // GPS Power ON
-    delay(100);
-    {
-      // switch to UTC time; UBX-CFG-RATE (6)+6+(2)=14 configuration bytes
-      const char cmd[14]={0xB5 ,0x62 ,0x06 ,0x08 ,0x06 ,0x00 ,0xE8 ,0x03 ,0x01 ,0x00 ,0x00 ,0x00 ,0x00 ,0x37};
-      for (int n=0;n<(14);n++) Serial1.write(cmd[n]); 
-    }
-    // flush serial buffer
-    while (Serial1.available()) Serial1.read();
-
-    boolean flag = false;
-    char incomingByte; 
-    int messages = 0;
-    uint32_t nomessages = 0;
-
-    while(true)
-    {
-      if (Serial1.available()) 
-      {
-        // read the incoming byte:
-        incomingByte = Serial1.read();
-        nomessages = 0;
-        
-        if (incomingByte == '$') {messages++;   wdt_reset();}; // Prevent endless waiting
-        if (messages > 600) break; // more than 50 s
-
-        if (flag && (incomingByte == '*')) break;
-        flag = false;
-
-        if (incomingByte == 'A') flag = true;   // Waiting for FIX
-      }
-      else
-      {
-        nomessages++;  
-        if (nomessages > GPSerror) break; // preventing of forever waiting
-      }
-    }
-    
-    // make a string for assembling the NMEA to log:
-    dataString = "";
-
-    flag = false;
-    messages = 0;
-    nomessages = 0;
-    while(true)
-    {
-      if (Serial1.available()) 
-      {
-        // read the incoming byte:
-        incomingByte = Serial1.read();
-        nomessages = 0;
-        
-        if (incomingByte == '$') {flag = true; messages++;};
-        if (messages > MSG_NO)
-        {
-          readRTC();
-                
-          dataString += "$TIME,";
-          dataString += String(tm); 
-          dataString += ".";
-          dataString += String(tm_s100); 
-          
-          break;
-        }
-        
-        // say what you got:
-        if (flag && (messages<=MSG_NO)) dataString+=incomingByte;
-      }
-      else
-      {
-        nomessages++;  
-        if (nomessages > GPSerror) break; // preventing of forever waiting
-      }
-    }
-    digitalWrite(GPSpower, LOW); // GPS Power OFF
-
-    {
-        DDRB = 0b10111110;
-        PORTB = 0b00001111;  // SDcard Power ON
-        
-        // make sure that the default chip select pin is set to output
-        // see if the card is present and can be initialized:
-        if (!SD.begin(SS)) 
-        {
-          Serial.println("#Card failed, or not present");
-          // don't do anything more:
-          return;
-        }
-        
-        // open the file. note that only one file can be open at a time,
-        // so you have to close this one before opening another.
-        File dataFile = SD.open("datalog.txt", FILE_WRITE);
-        
-        // if the file is available, write to it:
-        if (dataFile) 
-        {
-          digitalWrite(LED_red, HIGH);  // Blink for Dasa
-          dataFile.println(dataString);  // write to SDcard (800 ms)     
-          digitalWrite(LED_red, LOW);          
-          dataFile.close();
-        }  
-        // if the file isn't open, pop up an error:
-        else 
-        {
-          Serial.println("#error opening datalog.txt");
-        }
-        
-        DDRB = 0b10011110;
-        PORTB = 0b00000001;  // SDcard Power OFF
-    }  
-#ifdef DEBUG
-    Serial.println(dataString);  // print to terminal (additional 700 ms)
-    wdt_reset(); //Reset WDT
-#endif
   }
 }
