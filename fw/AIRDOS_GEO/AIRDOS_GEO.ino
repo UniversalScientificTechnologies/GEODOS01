@@ -153,6 +153,32 @@ void readRTC()
   tm += bcdToDec(Wire.read()) * 10000;
   tm = tm * 60 * 60 + tm_min * 60 + tm_sec;
 }
+
+#define BQ34Z100 0x55
+
+int16_t readBat(int8_t regaddr)
+{
+  Wire.beginTransmission(BQ34Z100);
+  Wire.write(regaddr);
+  Wire.endTransmission();
+  
+  Wire.requestFrom(BQ34Z100,1);
+  
+  unsigned int low = Wire.read();
+  
+  Wire.beginTransmission(BQ34Z100);
+  Wire.write(regaddr+1);
+  Wire.endTransmission();
+  
+  Wire.requestFrom(BQ34Z100,1);
+  
+  unsigned int high = Wire.read();
+  
+  unsigned int high1 = high<<8;
+  
+  return (high1 + low);
+}
+
   
 void setup()
 {
@@ -266,7 +292,8 @@ void setup()
     }
     
     DDRB = 0b10011110;
-    PORTB = 0b00000001;  // SDcard Power OFF          
+    PORTB = 0b00000001;  // SDcard Power OFF  
+
   }    
 
   // measurement of ADC offset
@@ -607,6 +634,15 @@ void loop()
       {
         dataString += "$Error";
       }
+
+      dataString += ",";
+      dataString += String(readBat(8));   // mV - U
+      dataString += ",";
+      dataString += String(readBat(10));  // mA - I
+      dataString += ",";
+      dataString += String(readBat(4));   // mAh - remaining capacity
+      dataString += ",";
+      dataString += String(readBat(6));   // mAh - full charge
             
       for(int n=0; n<RANGE; n++)  
       {
@@ -711,6 +747,6 @@ void loop()
       digitalWrite(LED_red, HIGH);  // Blink for Dasa
       Serial.println(dataString);   // print to terminal (additional 700 ms in DEBUG mode)
       digitalWrite(LED_red, LOW);                
-    }    
+    }  
   }
 }
