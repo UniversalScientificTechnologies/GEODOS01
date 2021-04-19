@@ -1,7 +1,7 @@
 // Compiled with: Arduino 1.8.13
 
 /*
-  Battery Guage setup
+  Battery Guage setup for BQ34Z100-G1
 
 ISP
 ---
@@ -26,10 +26,6 @@ LED
 ---
 LED_red  23  PC7         // LED for Dasa
 
-Time Synchronisation
---------------------
-SYNC0   18  PC2
-SYNC1   19  PC3
 
 
                      Mighty 1284p    
@@ -72,13 +68,12 @@ TX1/INT1 (D 11) PD3 17|        |24 PC2 (D 18) TCK
 #define MISO      6    // PB6
 #define SCK       7    // PB7
 #define INT       20   // PC4
-#define SYNC0     18   // PC2
-#define SYNC1     19   // PC3
-
-
 
 #define BQ34Z100 0x55
 
+String dataString;
+
+// read words by standard commands
 int16_t readBat(int8_t regaddr)
 {
   Wire.beginTransmission(BQ34Z100);
@@ -102,69 +97,23 @@ int16_t readBat(int8_t regaddr)
   return (high1 + low);
 }
 
-void ReadFlash()
-{
-  Wire.beginTransmission(BQ34Z100);
-  Wire.write(0x3F);
-  Wire.write(55 / 32 );
-  Wire.endTransmission();
-  Wire.beginTransmission(BQ34Z100);
-  Wire.write(0x3E);
-  Wire.write(48);
-  Wire.endTransmission();
-  Wire.beginTransmission(BQ34Z100);
-  Wire.write(0x61);
-  Wire.write(0);
-  Wire.endTransmission();
-  
-  Wire.beginTransmission(BQ34Z100);
-  Wire.write(0x40);
-  Wire.endTransmission();
- 
-  Wire.requestFrom(BQ34Z100,32);
-  Serial.println( );
-  for(int n=0;n<32;n++)
-  {
-    Serial.print( char(Wire.read()));
-    //Serial.print( Wire.read(),HEX);
-    Serial.print(",");
-  }
-  Serial.println( );
-  Wire.requestFrom(BQ34Z100,32);
-  Serial.println( );
-  for(int n=0;n<32;n++)
-  {
-    Serial.print( char(Wire.read()));
-    Serial.print(",");
-  }
-  Serial.println( );
- }  
-
+// Read one byte from battery guage flash
 uint8_t ReadFlashByte(uint8_t fclass, uint8_t foffset)
 {
   Wire.beginTransmission(BQ34Z100);
-  Wire.write(0x61);
+  Wire.write(0x61);                   // start access to flash memory
   Wire.write(0x00);
   Wire.endTransmission();
-  Wire.beginTransmission(BQ34Z100);
+  Wire.beginTransmission(BQ34Z100);   // memory Subclass
   Wire.write(0x3E);
   Wire.write(fclass);
   Wire.endTransmission();
-  Wire.beginTransmission(BQ34Z100);
+  Wire.beginTransmission(BQ34Z100);   // memory 32 bytes page
   Wire.write(0x3F);
   Wire.write(foffset / 32);
   Wire.endTransmission();
     
-  /*
-  Serial.print(fclass);
-  Serial.print("#");
-  Serial.print(foffset / 32);
-  Serial.print("#");
-  Serial.print(foffset % 32);
-  Serial.print("#");
-  */
-  
-  uint16_t fsum = 0;
+  uint16_t fsum = 0;                  // compute checksum of 32 bytes RAM block
   Wire.beginTransmission(BQ34Z100);
   Wire.write(0x40);
   Wire.endTransmission();
@@ -173,107 +122,90 @@ uint8_t ReadFlashByte(uint8_t fclass, uint8_t foffset)
   {      
     uint8_t tmp = Wire.read();      
     fsum += tmp;
-    //Serial.print(tmp, HEX);
-    //Serial.print(",");
   }
-  //Serial.println (fsum, HEX);
-  fsum = (0xFF^fsum) & 0xFF;
-  //Serial.println (fsum, HEX);
+  fsum = (0xFF^fsum) & 0xFF;          // invert bits
 
-  Wire.beginTransmission(BQ34Z100);
+  Wire.beginTransmission(BQ34Z100);   // read specific byte
   Wire.write(0x40+(foffset % 32));
   Wire.endTransmission();
   Wire.requestFrom(BQ34Z100,1);
   uint8_t value = Wire.read();
 
-  Wire.beginTransmission(BQ34Z100);
+  Wire.beginTransmission(BQ34Z100);   // read of chcecksum of RAM block
   Wire.write(0x60);
   Wire.endTransmission();
   Wire.requestFrom(BQ34Z100,1);
   uint8_t v = Wire.read();
-    
-  /*
-  Serial.print (v, HEX);
-  Serial.println (" sum ");
-  Serial.print (value, HEX);
-  Serial.println (" value ");
-  */
-  
+      
   return (value);
 }
 
+// Write one byte to battery guage flash 
 void WriteFlashByte(uint8_t fclass, uint8_t foffset, uint8_t fbyte)
 {
-  Wire.beginTransmission(BQ34Z100);
-  Wire.write(0x61);
-  Wire.write(0x00);
-  Wire.endTransmission();
-  Wire.beginTransmission(BQ34Z100);
-  Wire.write(0x3E);
-  Wire.write(fclass);
-  Wire.endTransmission();
-  Wire.beginTransmission(BQ34Z100);
-  Wire.write(0x3F);
-  Wire.write(foffset / 32);
-  Wire.endTransmission();
+  for(uint8_t xx=0; xx<4; xx++) // I do not now why
+  {
+    Wire.beginTransmission(BQ34Z100);
+    Wire.write(0x61);                   // start access to flash memory
+    Wire.write(0x00);
+    Wire.endTransmission();
+    Wire.beginTransmission(BQ34Z100);
+    Wire.write(0x3E);                   // memory Subclass
+    Wire.write(fclass);
+    Wire.endTransmission();
+    Wire.beginTransmission(BQ34Z100);
+    Wire.write(0x3F);                   // memory 32 bytes page
+    Wire.write(foffset / 32);
+    Wire.endTransmission();
+      
     
+    uint16_t fsum = 0;                  // Compute chcecksum of readed block
+    Wire.beginTransmission(BQ34Z100);
+    Wire.write(0x40);
+    Wire.endTransmission();
+    Wire.requestFrom(BQ34Z100,32);
+    for (uint8_t addr=0; addr<32; addr++)
+    {      
+      uint8_t tmp = Wire.read();      
+      fsum += tmp;
+    }
+    fsum = (0xFF^fsum) & 0xFF;
+    
+    Wire.beginTransmission(BQ34Z100);   // Rewrite specific byte in readed block
+    Wire.write(0x40+(foffset % 32));
+    Wire.write(fbyte);
+    Wire.endTransmission();
   
-  Serial.print(fclass);
-  Serial.print("#");
-  Serial.print(foffset / 32);
-  Serial.print("#");
-  Serial.print(foffset % 32);
-  Serial.print("#");
-
-  uint16_t fsum = 0;
-  Wire.beginTransmission(BQ34Z100);
-  Wire.write(0x40);
-  Wire.endTransmission();
-  Wire.requestFrom(BQ34Z100,32);
-  for (uint8_t addr=0; addr<32; addr++)
-  {      
-    uint8_t tmp = Wire.read();      
-    fsum += tmp;
-    Serial.print(tmp, HEX);
-    Serial.print(",");
+    fsum = 0;                               // Compute new chcecksum
+    Wire.beginTransmission(BQ34Z100);
+    Wire.write(0x40);
+    Wire.endTransmission();
+    Wire.requestFrom(BQ34Z100,32);
+    for (uint8_t addr=0; addr<32; addr++)
+    {      
+      uint8_t tmp = Wire.read();      
+      fsum += tmp;
+    }
+    fsum = (0xFF^fsum) & 0xFF;
+  
+    delay(100);
+    Wire.beginTransmission(BQ34Z100);   // Write new checksum and those rewrite flash
+    Wire.write(0x60);
+    Wire.write(fsum);
+    Wire.endTransmission();
+    delay(100);
   }
-  //Serial.println (fsum, HEX);
-  fsum = (0xFF^fsum) & 0xFF;
-  Serial.println (fsum, HEX);
-
-  
-  Wire.beginTransmission(BQ34Z100);
-  Wire.write(0x40+(foffset % 32));
-  Wire.write(fbyte);
-  Wire.endTransmission();
-
-  fsum = 0;
-  Wire.beginTransmission(BQ34Z100);
-  Wire.write(0x40);
-  Wire.endTransmission();
-  Wire.requestFrom(BQ34Z100,32);
-  for (uint8_t addr=0; addr<32; addr++)
-  {      
-    uint8_t tmp = Wire.read();      
-    fsum += tmp;
-    Serial.print(tmp, HEX);
-    Serial.print(",");
-  }
-  //Serial.println (fsum, HEX);
-  fsum = (0xFF^fsum) & 0xFF;
-  Serial.println (fsum, HEX);
-  
-  Wire.beginTransmission(BQ34Z100);
-  Wire.write(0x60);
-  Wire.write(fsum);
-  Wire.endTransmission();
 }
 
+// Reset battery guage (0x0041)
 void ResetGuage()
 {
   Wire.beginTransmission(BQ34Z100);
   Wire.write(0x00);
   Wire.write(0x00);
+  Wire.endTransmission();
+  Wire.beginTransmission(BQ34Z100);
+  Wire.write(0x01);
   Wire.write(0x41);
   Wire.endTransmission();
 }
@@ -287,6 +219,27 @@ int8_t readb(int8_t command)
   uint8_t low = Wire.read();
 
 }
+
+void PrintBatteryStatus()
+{
+  dataString = "$GUAGE, ";
+  
+  dataString += String(readBat(0x8));   // mV - U
+  dataString += " mV, ";
+  dataString += String(readBat(0xa));  // mA - I
+  dataString += " mA, ";
+  dataString += String(readBat(0x4));   // mAh - remaining capacity
+  dataString += " mAh, ";
+  dataString += String(readBat(0x6));   // mAh - full charge
+  dataString += " mAh full, ";
+  dataString += String(readBat(0xc) * 0.1 - 273.15);   // temperature
+  dataString += " C";
+
+  digitalWrite(LED_red, HIGH);  // Blink for Dasa
+  Serial.println(dataString);   // print to terminal (additional 700 ms in DEBUG mode)
+  digitalWrite(LED_red, LOW);  
+}
+
  
 void setup()
 {
@@ -314,11 +267,13 @@ void setup()
 
 }
 
-
-
 void loop()
 {        
-  String dataString = "$FLASH,";
+  PrintBatteryStatus();
+  Serial.println();
+
+  /* old version BQ34Z100
+  dataString = "$FLASH,";
   dataString += char(ReadFlashByte(48, 68));   
   dataString += char(ReadFlashByte(48, 69));   
   dataString += char(ReadFlashByte(48, 70));   
@@ -332,44 +287,82 @@ void loop()
   dataString += char(readb(0x68));   
   dataString += char(readb(0x69));   
   dataString += char(readb(0x6a));   
+  */
 
+  dataString = "$FLASH,";
+  for (uint8_t n=32; n<43; n++) dataString += char(ReadFlashByte(48, n));   // Part type
+  dataString += ",";
+  for (uint8_t n=44; n<55; n++) dataString += char(ReadFlashByte(48, n));   // Manufacturer
+  dataString += ",";
+  for (uint8_t n=56; n<60; n++) dataString += char(ReadFlashByte(48, n));   // Chemistry
+  
   digitalWrite(LED_red, HIGH);  // Blink for Dasa
   Serial.println(dataString);   // print to terminal (additional 700 ms in DEBUG mode)
   digitalWrite(LED_red, LOW);                
 
-  Serial.print("CHEM ID: ");
-  Serial.println(ReadFlashByte(83,0)+ReadFlashByte(83,1)*256, HEX); 
   Serial.print("LED CONF: ");
   Serial.println(ReadFlashByte(64,4), HEX); 
-  WriteFlashByte(64,4,0x64);
-  delay(100);
-  ResetGuage();
+  Serial.print("Design Capacity: ");
+  Serial.println(ReadFlashByte(48,11)*256 + ReadFlashByte(48,12)); 
+  Serial.print("Design Energy: ");
+  Serial.println(ReadFlashByte(48,13)*256 + ReadFlashByte(48,14)); 
+  Serial.print("Bat. low alert: ");
+  Serial.print("Cell BL Set Volt Threshold: ");
+  Serial.println(ReadFlashByte(49,8)*256 + ReadFlashByte(49,9)); 
+  Serial.print("Cell BL Clear Volt Threshold: ");
+  Serial.println(ReadFlashByte(49,11)*256 + ReadFlashByte(49,12)); 
+  Serial.print("Cell BL Set Volt Time: ");
+  Serial.println(ReadFlashByte(49,10)); 
+  Serial.print("Cell BH Set Volt Threshold: ");
+  Serial.println(ReadFlashByte(49,13)*256 + ReadFlashByte(49,14)); 
+  Serial.print("Cell BH Volt Time: ");
+  Serial.println(ReadFlashByte(49,15)); 
+  Serial.print("Cell BH Clear Volt Threshold: ");
+  Serial.println(ReadFlashByte(49,16)*256 + ReadFlashByte(49,17)); 
+  Serial.print("Cycle Delta: ");
+  Serial.println(ReadFlashByte(49,21)); 
+  WriteFlashByte(64,4,0x63);    // 7+1 LEDs and I2C interface
+  WriteFlashByte(48,11,0x0b);   // Design Capacity 3000 mAh = 0xbb8 (default 1000 mAh = 0x3e8) 
+  WriteFlashByte(48,12,0xb8);   // Must be written in this order, I do not know why
+  WriteFlashByte(48,13,0x31);   // Design Energy 12600 mWh = 0x3138 (default 5400 mWh = 0x1518)
+  WriteFlashByte(48,14,0x38);   
+
+  WriteFlashByte(64,5,0x10);   // Battery Low voltage ALERT
+  WriteFlashByte(64,6,0x00);   
+  //WriteFlashByte(49,8,0x0b);   // Battery set low voltage threshold 3000 mV = 0x0bb8 (default 0 mV = 0x0000)
+  //WriteFlashByte(49,9,0xb8);   
+  //WriteFlashByte(49,11,0x0c);   // Battery clear low voltage threshold 3300 mV = 0x0ce4 (default 5 mV = 0x0005)
+  //WriteFlashByte(49,12,0xe4);   
+  WriteFlashByte(49,11,0x0e);   // Battery clear low voltage threshold 3700 mV = 0x0ce4 (default 5 mV = 0x0005)
+  WriteFlashByte(49,12,0x74);   
+  WriteFlashByte(49,10,0x32);   // Battery set low voltage time hreshold 50 s = 0x32 (default 0 s = 0x00, max. 60 s)
+  //ResetGuage();
   delay(100);
   Serial.print("LED CONF: ");
   Serial.println(ReadFlashByte(64,4), HEX); 
+  Serial.print("Design Capacity: ");
+  Serial.println(ReadFlashByte(48,11)*256 + ReadFlashByte(48,12)); 
+  Serial.print("Design Energy: ");
+  Serial.println(ReadFlashByte(48,13)*256 + ReadFlashByte(48,14)); 
+  Serial.print("Bat. low alert: ");
+  Serial.print("Cell BL Set Volt Threshold: ");
+  Serial.println(ReadFlashByte(49,8)*256 + ReadFlashByte(49,9)); 
+  Serial.print("Cell BL Clear Volt Threshold: ");
+  Serial.println(ReadFlashByte(49,11)*256 + ReadFlashByte(49,12)); 
+  Serial.print("Cell BL Set Volt Time: ");
+  Serial.println(ReadFlashByte(49,10)); 
+  Serial.print("Cell BH Set Volt Threshold: ");
+  Serial.println(ReadFlashByte(49,13)*256 + ReadFlashByte(49,14)); 
+  Serial.print("Cell BH Volt Time: ");
+  Serial.println(ReadFlashByte(49,15)); 
+  Serial.print("Cell BH Clear Volt Threshold: ");
+  Serial.println(ReadFlashByte(49,16)*256 + ReadFlashByte(49,17)); 
+  Serial.print("Cycle Delta: ");
+  Serial.println(ReadFlashByte(49,21)); 
 
   while(true)
   {
-    dataString = "$GUAGE, ";
-    
-    dataString += String(readBat(0x8));   // mV - U
-    dataString += " mV, ";
-    dataString += String(readBat(0xa));  // mA - I
-    dataString += " mA, ";
-    dataString += String(readBat(0x4));   // mAh - remaining capacity
-    dataString += " mAh, ";
-    dataString += String(readBat(0x6));   // mAh - full charge
-    dataString += " mAh full, ";
-    dataString += String(readBat(0xc) * 0.1 - 273.15);   // temperature
-    dataString += " C, ";
-    dataString += String(readBat(0x7a),HEX);   // Chemistry
-    dataString += String(readBat(0x7c),HEX);   
-    dataString += " CHEM";
-  
-    digitalWrite(LED_red, HIGH);  // Blink for Dasa
-    Serial.println(dataString);   // print to terminal (additional 700 ms in DEBUG mode)
-    digitalWrite(LED_red, LOW);  
-
+    PrintBatteryStatus();
     delay(1000);
   }
 }
