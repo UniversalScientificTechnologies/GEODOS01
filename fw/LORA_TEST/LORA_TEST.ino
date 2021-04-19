@@ -33,15 +33,16 @@
 //                       +--------+
 //
 
-// SX1262_RST, 0, PB0
-// SX1262_DIO1, 3, PB3
+// SX1262_RESET, 1, PB1
 // SX1262_BUSY, 2, PB2
+// SX1262_DIO1, 3, PB3
 // CS, 4, PB4
 // MOSI, 5, PB5
 // MISO, 6, PB6
 // SCK, 7, PB7
 // RX0, 8, PD0 -- GPS
 // TX0, 9, PD1
+
 
 #include "src/TinyGPS++/TinyGPS++.h"
 #include <stdio.h>
@@ -77,21 +78,30 @@ const unsigned TX_INTERVAL = 20000;
 
 // All pin assignments use Arduino pin numbers (e.g. what you would pass
 // to digitalWrite), or LMIC_UNUSED_PIN when a pin is not connected.
+// SX1262_RESET, 21, PC5
+// SX1262_BUSY, 18, PC2
+// SX1262_DIO1, 19, PC3
+// CS, 20, PC4
+// MOSI, 5, PB5
+// MISO, 6, PB6
+// SCK, 7, PB7
+// RX0, 8, PD0 -- GPS
+// TX0, 9, PD1
 const lmic_pinmap lmic_pins = {
     // NSS input pin for SPI communication (required)
-    .nss = 4,
+    .nss = 20,
     .tx = LMIC_CONTROLLED_BY_DIO2,
     .rx = LMIC_UNUSED_PIN,
     // Radio reset output pin (active high for SX1276, active low for
     // others). When omitted, reset is skipped which might cause problems.
-    .rst = 1,
+    .rst = 21,
     // DIO input pins.
     //   For SX127x, LoRa needs DIO0 and DIO1, FSK needs DIO0, DIO1 and DIO2
     //   For SX126x, Only DIO1 is needed (so leave DIO0 and DIO2 as LMIC_UNUSED_PIN)
-    .dio = {/* DIO0 */ LMIC_UNUSED_PIN, /* DIO1 */ 3, /* DIO2 */ LMIC_UNUSED_PIN},
+    .dio = {/* DIO0 */ LMIC_UNUSED_PIN, /* DIO1 */ 19, /* DIO2 */ LMIC_UNUSED_PIN},
     // Busy input pin (SX126x only). When omitted, a delay is used which might
     // cause problems.
-    .busy = 2,
+    .busy = 18,
     .tcxo = LMIC_UNUSED_PIN,
 };
 
