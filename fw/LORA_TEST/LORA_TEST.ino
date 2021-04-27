@@ -33,22 +33,11 @@
 //                       +--------+
 //
 
-// SX1262_RESET, 1, PB1
-// SX1262_BUSY, 2, PB2
-// SX1262_DIO1, 3, PB3
-// CS, 4, PB4
-// MOSI, 5, PB5
-// MISO, 6, PB6
-// SCK, 7, PB7
-// RX0, 8, PD0 -- GPS
-// TX0, 9, PD1
-
-
 #include "src/TinyGPS++/TinyGPS++.h"
 #include <stdio.h>
 #include <stdint.h>
 
-TinyGPSPlus gps;
+//TinyGPSPlus gps;
 uint32_t last_packet = 0;
 
 #ifndef MOCK
@@ -295,9 +284,6 @@ void setup() {
 }
 
 void loop() {
-    while (Serial.available() > 0)
-        gps.encode(Serial.read());
-
     // Let LMIC handle background tasks
     os_runstep();
 
@@ -341,90 +327,3 @@ void send_packet()
 
     last_packet = millis();
 }
-
-/*
-void send_packet()
-{
-    uint8_t m[17];
-    uint8_t *p = m+1;
-    m[0] = 0;
-    p = pack_latlon(p, gps.location.lat());
-    p = pack_latlon(p, gps.location.lng());
-    if (gps.location.isValid())
-        m[0] |= LATLON_OK;
-    uint32_t age_s = gps.location.age() / 1000;
-    if (age_s > 0xffff)
-        age_s = 0xffff;
-    *p++ = age_s >> 8;
-    *p++ = age_s;
-    int32_t alt_m = gps.altitude.meters();
-    if (alt_m < -0x7fff) alt_m = -0x7fff;
-    if (alt_m >  0x7fff) alt_m =  0x7fff;
-    *p++ = alt_m >> 8;
-    *p++ = alt_m;
-    if (gps.altitude.isValid())
-        m[0] |= ALT_OK;
-    int16_t course = gps.course.deg() * 64;
-    *p++ = course >> 8;
-    *p++ = course;
-    if (gps.course.isValid())
-        m[0] |= COURSE_OK;
-    int16_t speed = gps.speed.mps() * 16;
-    *p++ = speed >> 8;
-    *p++ = speed;
-    if (gps.speed.isValid())
-        m[0] |= SPEED_OK;
-
-#ifndef MOCK
-    LMIC_setTxData2(1, m, sizeof(m), 0);
-    Serial.println(F("Packet queued"));
-#else
-    for (int i = 0; i < sizeof(m); i++)
-        printf("%02x", m[i]);
-    printf("\n");
-#endif
-
-    last_packet = millis();
-}
-*/
-
-#ifdef MOCK
-const char *gpsStream =
-"$GPGGA,203026.311,4902.232,N,01429.466,E,1,12,1.0,0.0,M,0.0,M,,*6E\r\n"
-"$GPGSA,A,3,01,02,03,04,05,06,07,08,09,10,11,12,1.0,1.0,1.0*30\r\n"
-"$GPRMC,203026.311,A,4902.232,N,01429.466,E,038.9,065.2,191120,000.0,W*73\r\n"
-"$GPGGA,203027.311,4902.238,N,01429.479,E,1,12,1.0,0.0,M,0.0,M,,*6B\r\n"
-"$GPGSA,A,3,01,02,03,04,05,06,07,08,09,10,11,12,1.0,1.0,1.0*30\r\n"
-"$GPRMC,203027.311,A,4902.238,N,01429.479,E,038.9,065.2,191120,000.0,W*76\r\n"
-"$GPGGA,203028.311,4902.244,N,01429.493,E,1,12,1.0,0.0,M,0.0,M,,*6B\r\n"
-"$GPGSA,A,3,01,02,03,04,05,06,07,08,09,10,11,12,1.0,1.0,1.0*30\r\n"
-"$GPRMC,203028.311,A,4902.244,N,01429.493,E,038.9,065.2,191120,000.0,W*76\r\n"
-"$GPGGA,203029.311,4902.250,N,01429.506,E,1,12,1.0,0.0,M,0.0,M,,*62\r\n"
-"$GPGSA,A,3,01,02,03,04,05,06,07,08,09,10,11,12,1.0,1.0,1.0*30\r\n"
-"$GPRMC,203029.311,A,4902.250,N,01429.506,E,038.9,065.2,191120,000.0,W*7F\r\n"
-"$GPGGA,203030.311,4902.256,N,01429.520,E,1,12,1.0,0.0,M,0.0,M,,*68\r\n"
-"$GPGSA,A,3,01,02,03,04,05,06,07,08,09,10,11,12,1.0,1.0,1.0*30\r\n"
-"$GPRMC,203030.311,A,4902.256,N,01429.520,E,038.9,065.2,191120,000.0,W*75\r\n"
-"$GPGGA,203031.311,4902.263,N,01429.533,E,1,12,1.0,0.0,M,0.0,M,,*6D\r\n"
-"$GPGSA,A,3,01,02,03,04,05,06,07,08,09,10,11,12,1.0,1.0,1.0*30\r\n"
-"$GPRMC,203031.311,A,4902.263,N,01429.533,E,038.9,065.2,191120,000.0,W*70\r\n"
-"$GPGGA,203032.311,4902.269,N,01429.547,E,1,12,1.0,0.0,M,0.0,M,,*67\r\n"
-"$GPGSA,A,3,01,02,03,04,05,06,07,08,09,10,11,12,1.0,1.0,1.0*30\r\n"
-"$GPRMC,203032.311,A,4902.269,N,01429.547,E,038.9,065.2,191120,000.0,W*7A\r\n"
-"$GPGGA,203033.311,4902.275,N,01429.560,E,1,12,1.0,0.0,M,0.0,M,,*6E\r\n"
-"$GPGSA,A,3,01,02,03,04,05,06,07,08,09,10,11,12,1.0,1.0,1.0*30\r\n"
-"$GPRMC,203033.311,A,4902.275,N,01429.560,E,038.9,065.2,191120,000.0,W*73\r\n"
-"$GPGGA,203034.311,4902.281,N,01429.574,E,1,12,1.0,0.0,M,0.0,M,,*67\r\n"
-"$GPGSA,A,3,01,02,03,04,05,06,07,08,09,10,11,12,1.0,1.0,1.0*30\r\n"
-"$GPRMC,203034.311,A,4902.281,N,01429.574,E,038.9,065.2,191120,000.0,W*7A\r\n"
-"$GPGGA,203035.311,4902.287,N,01429.587,E,1,12,1.0,0.0,M,0.0,M,,*6C\r\n"
-"$GPGSA,A,3,01,02,03,04,05,06,07,08,09,10,11,12,1.0,1.0,1.0*30\r\n"
-"$GPRMC,203035.311,A,4902.287,N,01429.587,E,038.9,065.2,191120,000.0,W*71\r\n";
-int main(int argc, char const *argv[])
-{
-    while (*gpsStream)
-        if (gps.encode(*gpsStream++))
-            send_packet();
-    return 0;
-}
-#endif /* MOCK defined */
