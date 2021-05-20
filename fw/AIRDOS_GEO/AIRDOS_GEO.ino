@@ -1,9 +1,18 @@
 #define DEBUG // Please comment it if you are not debugging
 String githash = "51832f3";
-String FWversion = "GEO1";
-#define ZERO 256  // ADC DC offset
+String FWversion = "GEO2"; // Output data format
+// ADC DC offset
+#define ZERO 256  // 10
+//#define ZERO 258  // 36
+//#define ZERO 256  // EC
 #define RANGE 9   // histogram range
+#define NOISE 2   // noise level
 #define EVENTS 500 // maximal number of recorded events
+#define CHANNELS 512    // number of channels in buffer for histogram, including negative numbers
+#define GPSerror 700000 // number of cycles for waitig for GPS in case of GPS error 
+#define GPSdelay  270   // number of measurements between obtaining GPS position
+//!!!#define GPSdelay 2700   // number of measurements between obtaining GPS position
+                        // 2700 = cca 12 h
 
 // Compiled with: Arduino 1.8.13
 
@@ -85,11 +94,12 @@ TX1/INT1 (D 11) PD3 17|        |24 PC2 (D 18) TCK
 #include <Wire.h>           
 #include <Adafruit_MPL3115A2.h>
 #include <avr/wdt.h>
+#include "src/TinyGPS++/TinyGPS++.h"
 
 #include <stdio.h>
 #include <stdint.h>
 
-#include "src/basicmac/basicmac.h"
+#include "src/basicmac/basicmac.h"  // LoRa IoT
 #include "src/basicmac/hal/hal.h"
 #include <SPI.h>
 
@@ -109,24 +119,64 @@ TX1/INT1 (D 11) PD3 17|        |24 PC2 (D 18) TCK
 #define IOT_DIO1  19   // PC3
 #define IOT_CS    20   // PC4
 
-#define CHANNELS 512    // number of channels in buffer for histogram, including negative numbers
-#define GPSerror 700000 // number of cycles for waitig for GPS in case of GPS error 
-#define GPSdelay 30   // number of measurements between obtaining GPS position
-//!!!#define GPSdelay 2700   // number of measurements between obtaining GPS position
-                        // 2700 = cca 12 h
 uint16_t count = 0;
 uint32_t serialhash = 0;
 uint8_t lo, hi;
 uint16_t u_sensor, maximum;
 Adafruit_MPL3115A2 sensor = Adafruit_MPL3115A2();
 uint32_t last_packet = 0;
+uint16_t hits;
+uint16_t lat_old;
+uint16_t lon_old;
 
+// 1290c00806a20091e412a000a0000010
+// Network Session Key
+static const PROGMEM u1_t NWKSKEY[16] = {0x04,0xC6,0x01,0xFB,0x07,0x87,0x73,0x5C,0x69,0xF3,0x90,0x9D,0xE6,0x93,0x9B,0x1F};
+// App Session Key
+static const u1_t PROGMEM APPSKEY[16] = {0x9E,0xA3,0x24,0x77,0x4B,0x08,0x61,0xCA,0x75,0x1D,0xF3,0xD9,0x47,0xF9,0x01,0xA7};
+// Device Address
+static const u4_t DEVADDR = 0x26013270; 
+/*
+// 1290c00806a200923813a000a00000ec
+// Network Session Key
+static const PROGMEM u1_t NWKSKEY[16] = {0xA0,0xF5,0x88,0x11,0x38,0x69,0x9F,0xA8,0xE5,0x43,0x65,0x3D,0xF3,0x88,0x58,0x84};
+// App Session Key
+static const u1_t PROGMEM APPSKEY[16] = {0x3A,0xA2,0x77,0x3A,0x48,0xA1,0x6B,0x98,0x56,0xE3,0xEE,0xDF,0x74,0xE6,0x91,0x7A};
+// Device Address
+static const u4_t DEVADDR = 0x260117F2;
+
+// 1290c00806a200923c12a000a00000bf
+// Network Session Key
+static const PROGMEM u1_t NWKSKEY[16] = {0x34,0x65,0x90,0x49,0xD2,0xD2,0x12,0x08,0xD2,0xA8,0x64,0xE0,0xDE,0xD0,0x48,0x60};
+// App Session Key
+static const u1_t PROGMEM APPSKEY[16] = {0x43,0xB5,0x88,0x57,0x06,0x14,0xD5,0xA7,0x3F,0x1E,0xE1,0x0C,0xCC,0x4D,0x76,0xD0};
+// Device Address
+static const u4_t DEVADDR = 0x26013B9D;
+
+// 1290c00806a20091e412a000a0000010
+// Network Session Key
+static const PROGMEM u1_t NWKSKEY[16] = {0x04,0xC6,0x01,0xFB,0x07,0x87,0x73,0x5C,0x69,0xF3,0x90,0x9D,0xE6,0x93,0x9B,0x1F};
+// App Session Key
+static const u1_t PROGMEM APPSKEY[16] = {0x9E,0xA3,0x24,0x77,0x4B,0x08,0x61,0xCA,0x75,0x1D,0xF3,0xD9,0x47,0xF9,0x01,0xA7};
+// Device Address
+static const u4_t DEVADDR = 0x26013270; 
+
+// 1290c00806a20091c057a000a0000036
+// Network Session Key
+static const PROGMEM u1_t NWKSKEY[16] = {0xD0,0x25,0xC5,0xF1,0xC9,0x32,0x58,0x94,0xB7,0x73,0x62,0x16,0x6A,0xBA,0xAC,0x40};
+// App Session Key
+static const u1_t PROGMEM APPSKEY[16] = {0x64,0xEB,0xF4,0x73,0x29,0xF9,0xD2,0xC6,0xAA,0x3E,0x33,0xA1,0xA3,0x0E,0x14,0x1D};
+// Device Address
+static const u4_t DEVADDR = 0x2601349A; 
+
+// geodos01test
 // Network Session Key
 static const PROGMEM u1_t NWKSKEY[16] = {0xC0,0x1D,0x53,0x11,0xCB,0xDB,0x2C,0x2F,0xA9,0x2B,0xFE,0xA8,0x86,0x37,0x5B,0x8A};
 // App Session Key
 static const u1_t PROGMEM APPSKEY[16] = {0x6C,0x74,0x49,0x34,0x06,0x7A,0xE2,0xFA,0x2F,0xC6,0x6E,0xD7,0xC7,0xC7,0x39,0x49};
 // Device Address
-static const u4_t DEVADDR = 0x26013714;
+static const u4_t DEVADDR = 0x26013714; 
+*/
 
 void os_getJoinEui (u1_t* /* buf */) { }
 void os_getDevEui (u1_t* /* buf */) { }
@@ -320,7 +370,7 @@ uint8_t iot_message[5];
 void send_packet()
 {
     LMIC_setTxData2(1, iot_message, sizeof(iot_message), 0);
-    Serial.println(F("Packet queued"));
+    Serial.println(F("# Packet queued"));
 
     last_packet = millis();
 }
@@ -338,6 +388,7 @@ void set_power(uint8_t state)
   switch(state)
   {
     case SD_ON:
+      pinMode(MISO, OUTPUT);     
       pinMode(MOSI, OUTPUT);     
       PORTB |= 0b00001110;
       digitalWrite(SS, LOW);  
@@ -363,6 +414,28 @@ void set_power(uint8_t state)
   }
 }
 
+uint8_t *pack_latlon(uint8_t *p, double vd) {
+    uint32_t v = vd * 4194304.0;
+    *p++ = v >> 24;
+    *p++ = v >> 16;
+    *p++ = v >> 8;
+    *p++ = v;
+    return p;
+}
+
+void send_GPS_packet()
+{
+    uint8_t m[17];
+    uint8_t *p = m+1;
+    m[0] = 0;
+
+    //p = pack_latlon(p, gps.location.lat());
+    //p = pack_latlon(p, gps.location.lng());
+    LMIC_setTxData2(1, iot_message, sizeof(iot_message), 0);
+    Serial.println(F("# Packet queued"));
+
+    last_packet = millis();
+}
   
 void setup()
 {
@@ -635,10 +708,11 @@ void setup()
     //!!!PORTB = 0b00000001;  // SDcard Power OFF  
   }    
   
+  hits = 0;
+  lat_old = 0;
+  lon_old = 0;
   //!!! wdt_reset(); //Reset WDT
 }
-
-uint16_t hits = 0;
 
 void loop()
 {
@@ -707,33 +781,40 @@ void loop()
     dataString += ",";
     dataString += String(readBat(6));   // mAh - full charge
     dataString += ",";
-    dataString += String(hits);   // number of hits above histogram
+    dataString += String(hits);   // number of hits per measurement cycle
     hits = 0;
 
     // send_packet over LoRa IoT
     set_power(LORA_ON);
-    Serial.println("#1");
     // Let LMIC handle background tasks for LoRa IoT
     os_runstep();
-    Serial.println("#11");
     send_packet();
     Serial.println(dataString);
-    Serial.println("#12");
     os_runstep();
-    Serial.println("#13");
-    Serial.println("#14");
+
+    for(int i=0; i<10; i++)  
+    {
+      delay(50);
+      digitalWrite(LED_red, HIGH);  // Blink for Dasa 
+      delay(50);
+      digitalWrite(LED_red, LOW);  
+      os_runstep();
+    }
+
     set_power(LORA_OFF);
   }
 
 
   // GPS **********************
+  set_power(GPS_ON);
+//!!!
+//if (false)
   {
       // make a string for assembling the data to log:
       String dataString = "";
 
 #define MSG_NO 12    // number of logged NMEA messages
 
-    set_power(GPS_ON);
     {
       // switch to UTC time; UBX-CFG-RATE (6)+6+(2)=14 configuration bytes
       const char cmd[14]={0xB5 ,0x62 ,0x06 ,0x08 ,0x06 ,0x00 ,0xE8 ,0x03 ,0x01 ,0x00 ,0x00 ,0x00 ,0x00 ,0x37};
@@ -805,14 +886,10 @@ void loop()
         nomessages++;  
         if (nomessages > GPSerror) break; // preventing of forever waiting
       }
-    }
-    set_power(GPS_OFF);
-  
+    }  
 
-    if(false)
     {
-        //!!!DDRB = 0b10111110;
-        //!!!PORTB = 0b00001111;  // SDcard Power ON
+        set_power(SD_ON);
         
         // make sure that the default chip select pin is set to output
         // see if the card is present and can be initialized:
@@ -841,13 +918,89 @@ void loop()
           Serial.println("#error opening datalog.txt");
         }
         
-        //!!!DDRB = 0b10011110;
-        //!!!PORTB = 0b00000001;  // SDcard Power OFF
+        set_power(SD_OFF);
     }  
 #ifdef DEBUG
     Serial.println(dataString);  // print to terminal (additional 700 ms)
-    wdt_reset(); //Reset WDT
+    //!!!wdt_reset(); //Reset WDT
 #endif
+  }
+
+  {
+    TinyGPSPlus gps;
+
+    while (true)
+    {
+      if (Serial1.available() > 0) 
+      {
+        gps.encode(Serial1.read());
+      }
+      if (gps.location.isUpdated()) break;
+      if (gps.charsProcessed() > 200); break;
+    } 
+    set_power(GPS_OFF);
+
+    Serial.print("#");
+    Serial.print(gps.charsProcessed());
+    Serial.print(" Lat ");
+    Serial.print(gps.location.rawLat().deg);
+    Serial.print(" ");
+    Serial.print(gps.location.rawLat().billionths);
+    Serial.print(", Lon ");
+    Serial.print(gps.location.rawLng().deg);
+    Serial.print(" ");
+    Serial.println(gps.location.rawLng().billionths);
+
+    uint32_t lat = round(gps.location.lat()*10000);
+    uint32_t lon = round(gps.location.lng()*10000);
+    uint16_t lat_short = lat % 65535;
+    uint16_t lon_short = lon % 65535;
+    int lat_diff = lat_short - lat_old;
+    int lon_diff = lon_short - lon_old;
+
+    Serial.print("#latdiff ");
+    Serial.print(lat_diff);
+    Serial.print(" londiff ");
+    Serial.println(lon_diff);
+
+    if ((abs(lat_diff)>2) || (abs(lon_diff)>4)) // movement detection
+    {
+      lat_old = lat_short;
+      lon_old = lon_short;
+            
+      iot_message[0] = 0xff;
+      iot_message[1] = lat_short & 0xff;
+      iot_message[2] = lat_short >> 8;
+      iot_message[3] = lon_short & 0xff;
+      iot_message[4] = lon_short >> 8 ;
+        
+      // send_packet over LoRa IoT
+      set_power(LORA_ON);
+
+      // Let LMIC handle background tasks for LoRa IoT
+      for(int i=0; i<100; i++)  
+      {
+        delay(50);
+        digitalWrite(LED_red, HIGH);  // Blink for Dasa 
+        delay(50);
+        digitalWrite(LED_red, LOW);  
+        os_runstep();
+      }  
+
+      os_runstep();
+      send_packet();
+      os_runstep();
+  
+      for(int i=0; i<100; i++)  
+      {
+        delay(50);
+        digitalWrite(LED_red, HIGH);  // Blink for Dasa 
+        delay(50);
+        digitalWrite(LED_red, LOW);  
+        os_runstep();
+      }  
+      set_power(LORA_OFF);
+    }
   }
 
   
@@ -948,9 +1101,9 @@ void loop()
         }
         hit_count++;
       }
+      if (u_sensor > NOISE) hits++;
     }  
 
-    hits += hit_count; 
     
     // Data out
     // Histogram out
@@ -1012,7 +1165,7 @@ void loop()
        
       count++;
 
-Serial.println("11");
+Serial.println("#11");
       {        
 
         set_power(SD_ON);
@@ -1054,7 +1207,6 @@ Serial.println("11");
       Serial.println(dataString);   // print to terminal (additional 700 ms in DEBUG mode)
       digitalWrite(LED_red, LOW);                
     }    
-Serial.println("12");
 
     // Hits out
     {
@@ -1113,11 +1265,13 @@ Serial.println("12");
       Serial.println(dataString);   // print to terminal (additional 700 ms in DEBUG mode)
       digitalWrite(LED_red, LOW);                
     } 
+    /*
     set_power(LORA_ON);
     Serial.println("#1");
     // Let LMIC handle background tasks for LoRa IoT
     os_runstep();
     Serial.println("#11");
-    set_power(LORA_OFF);  
+    set_power(LORA_OFF);
+    */  
   }
 }
