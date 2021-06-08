@@ -10,7 +10,7 @@ String FWversion = "GEO2"; // Output data format
 #define EVENTS 500 // maximal number of recorded events
 #define CHANNELS 512    // number of channels in buffer for histogram, including negative numbers
 #define GPSerror 700000 // number of cycles for waitig for GPS in case of GPS error 
-#define GPSdelay  270   // number of measurements between obtaining GPS position
+#define GPSdelay  3   // number of measurements between obtaining GPS position
 //!!!#define GPSdelay 2700   // number of measurements between obtaining GPS position
                         // 2700 = cca 12 h
 
@@ -129,13 +129,13 @@ uint16_t hits;
 uint16_t lat_old;
 uint16_t lon_old;
 
-// 1290c00806a20091e412a000a0000010
+// 1290c00806a20091c057a000a0000036
 // Network Session Key
-static const PROGMEM u1_t NWKSKEY[16] = {0x04,0xC6,0x01,0xFB,0x07,0x87,0x73,0x5C,0x69,0xF3,0x90,0x9D,0xE6,0x93,0x9B,0x1F};
+static const PROGMEM u1_t NWKSKEY[16] = {0x3F,0x76,0xD6,0xEB,0xFC,0x9A,0x42,0x2A,0xD9,0x06,0x81,0x59,0x8C,0xAE,0x3E,0x60};
 // App Session Key
-static const u1_t PROGMEM APPSKEY[16] = {0x9E,0xA3,0x24,0x77,0x4B,0x08,0x61,0xCA,0x75,0x1D,0xF3,0xD9,0x47,0xF9,0x01,0xA7};
+static const u1_t PROGMEM APPSKEY[16] = {0xD8,0x5F,0x50,0x3E,0x28,0xC2,0xF6,0x61,0xE2,0x81,0x10,0xF5,0xFF,0x90,0x02,0x2B};
 // Device Address
-static const u4_t DEVADDR = 0x26013270; 
+static const u4_t DEVADDR = 0x260B4150; 
 /*
 // 1290c00806a200923813a000a00000ec
 // Network Session Key
