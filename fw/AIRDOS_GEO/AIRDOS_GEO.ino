@@ -1,7 +1,7 @@
 #define DEBUG // Please comment it if you are not debugging
 String githash = "51832f3";
 String FWversion = "GEO2"; // Output data format
-// ADC DC offset
+// ADC DC offset (3rd channel must be the first channel without noise)
 #define ZERO 256  // 10
 //#define ZERO 258  // 36
 //#define ZERO 256  // EC
@@ -11,6 +11,7 @@ String FWversion = "GEO2"; // Output data format
 #define CHANNELS 512    // number of channels in buffer for histogram, including negative numbers
 #define GPSerror 700000 // number of cycles for waitig for GPS in case of GPS error 
 #define GPSdelay  3   // number of measurements between obtaining GPS position
+//#define GPSdelay  60   // number of measurements between obtaining GPS position cca 10 minutes
 //!!!#define GPSdelay 2700   // number of measurements between obtaining GPS position
                         // 2700 = cca 12 h
 
@@ -129,6 +130,23 @@ uint16_t hits;
 uint16_t lat_old;
 uint16_t lon_old;
 
+// 1290c00806a200905c4aa000a0000013
+// Network Session Key
+static const PROGMEM u1_t NWKSKEY[16] = {0xBC,0x7C,0x13,0xA1,0xBB,0xE1,0xF0,0x77,0x14,0x9D,0x79,0xB8,0x50,0x2D,0xCC,0xD7};
+// App Session Key
+static const u1_t PROGMEM APPSKEY[16] = {0x4C,0xB7,0x66,0x21,0xB6,0xAA,0xF1,0xF7,0xEE,0x2E,0xAA,0x7E,0xCC,0x5C,0xFC,0x16};
+// Device Address
+static const u4_t DEVADDR = 0x260BE73E;
+
+/*
+// 1290c00806a200923813a000a00000ec
+// Network Session Key
+static const PROGMEM u1_t NWKSKEY[16] = {0x4C,0x4D,0x0E,0x77,0x7B,0x3F,0xAD,0xAC,0x93,0xF2,0x62,0x33,0xE5,0x81,0x6C,0x1B};
+// App Session Key
+static const u1_t PROGMEM APPSKEY[16] = {0x27,0x2C,0x7A,0x13,0xA9,0xC4,0xB6,0x9D,0x9B,0xAE,0x33,0x5F,0xFA,0xA6,0x8B,0x58};
+// Device Address
+static const u4_t DEVADDR = 0x260BD7C1;
+
 // 1290c00806a20091c057a000a0000036
 // Network Session Key
 static const PROGMEM u1_t NWKSKEY[16] = {0x3F,0x76,0xD6,0xEB,0xFC,0x9A,0x42,0x2A,0xD9,0x06,0x81,0x59,0x8C,0xAE,0x3E,0x60};
@@ -136,14 +154,14 @@ static const PROGMEM u1_t NWKSKEY[16] = {0x3F,0x76,0xD6,0xEB,0xFC,0x9A,0x42,0x2A
 static const u1_t PROGMEM APPSKEY[16] = {0xD8,0x5F,0x50,0x3E,0x28,0xC2,0xF6,0x61,0xE2,0x81,0x10,0xF5,0xFF,0x90,0x02,0x2B};
 // Device Address
 static const u4_t DEVADDR = 0x260B4150; 
-/*
-// 1290c00806a200923813a000a00000ec
+
+// 1290c00806a20091e412a000a0000010
 // Network Session Key
-static const PROGMEM u1_t NWKSKEY[16] = {0xA0,0xF5,0x88,0x11,0x38,0x69,0x9F,0xA8,0xE5,0x43,0x65,0x3D,0xF3,0x88,0x58,0x84};
+static const PROGMEM u1_t NWKSKEY[16] = {0xF2,0x28,0xA1,0xB1,0xF4,0xD9,0xB9,0x89,0xAD,0x30,0x91,0x2B,0xC1,0x87,0x45,0x49};
 // App Session Key
-static const u1_t PROGMEM APPSKEY[16] = {0x3A,0xA2,0x77,0x3A,0x48,0xA1,0x6B,0x98,0x56,0xE3,0xEE,0xDF,0x74,0xE6,0x91,0x7A};
+static const u1_t PROGMEM APPSKEY[16] = {0x9C,0x55,0xE5,0x6C,0x0E,0xBE,0xCD,0x3A,0x29,0xE3,0x79,0x85,0x2C,0xDC,0x33,0x40};
 // Device Address
-static const u4_t DEVADDR = 0x260117F2;
+static const u4_t DEVADDR = 0x260B1BEA; 
 
 // 1290c00806a200923c12a000a00000bf
 // Network Session Key
@@ -152,22 +170,6 @@ static const PROGMEM u1_t NWKSKEY[16] = {0x34,0x65,0x90,0x49,0xD2,0xD2,0x12,0x08
 static const u1_t PROGMEM APPSKEY[16] = {0x43,0xB5,0x88,0x57,0x06,0x14,0xD5,0xA7,0x3F,0x1E,0xE1,0x0C,0xCC,0x4D,0x76,0xD0};
 // Device Address
 static const u4_t DEVADDR = 0x26013B9D;
-
-// 1290c00806a20091e412a000a0000010
-// Network Session Key
-static const PROGMEM u1_t NWKSKEY[16] = {0x04,0xC6,0x01,0xFB,0x07,0x87,0x73,0x5C,0x69,0xF3,0x90,0x9D,0xE6,0x93,0x9B,0x1F};
-// App Session Key
-static const u1_t PROGMEM APPSKEY[16] = {0x9E,0xA3,0x24,0x77,0x4B,0x08,0x61,0xCA,0x75,0x1D,0xF3,0xD9,0x47,0xF9,0x01,0xA7};
-// Device Address
-static const u4_t DEVADDR = 0x26013270; 
-
-// 1290c00806a20091c057a000a0000036
-// Network Session Key
-static const PROGMEM u1_t NWKSKEY[16] = {0xD0,0x25,0xC5,0xF1,0xC9,0x32,0x58,0x94,0xB7,0x73,0x62,0x16,0x6A,0xBA,0xAC,0x40};
-// App Session Key
-static const u1_t PROGMEM APPSKEY[16] = {0x64,0xEB,0xF4,0x73,0x29,0xF9,0xD2,0xC6,0xAA,0x3E,0x33,0xA1,0xA3,0x0E,0x14,0x1D};
-// Device Address
-static const u4_t DEVADDR = 0x2601349A; 
 
 // geodos01test
 // Network Session Key
@@ -644,10 +646,10 @@ void setup()
     // default LoRaWAN, SF is different, but set them both to be
     // explicit).
     LMIC.dn2Freq = 869525000;
-    LMIC.dn2Dr = EU_DR_SF12;
+    LMIC.dn2Dr = EU_DR_SF9;
   
     // Set data rate for uplink
-    LMIC_setDrTxpow(EU_DR_SF12, KEEP_TXPOWADJ);
+    LMIC_setDrTxpow(EU_DR_SF10, KEEP_TXPOWADJ);
     #elif defined(CFG_us915)
     // NA-US channels 0-71 are configured automatically
     // but only one group of 8 should (a subband) should be active
@@ -771,9 +773,17 @@ void loop()
     iot_message[2] |= temp << 1;
     iot_message[3] = hits & 0xff;
     iot_message[4] = hits >> 8 ;
+
+    /* DEBUG
+    Serial.println();
+    for(int i=0; i<5; i++)
+    {
+      Serial.println(iot_message[i],HEX);
+    }
+    */
     
     dataString += ",";
-    dataString += String(voltage);   // mV - U
+    dataString += String(float(voltage)/1000);   // V - U
     dataString += ",";
     dataString += String(current);  // mA - I
     dataString += ",";
@@ -792,7 +802,7 @@ void loop()
     Serial.println(dataString);
     os_runstep();
 
-    for(int i=0; i<10; i++)  
+    for(int i=0; i<50; i++)  
     {
       delay(50);
       digitalWrite(LED_red, HIGH);  // Blink for Dasa 
@@ -978,7 +988,7 @@ void loop()
       set_power(LORA_ON);
 
       // Let LMIC handle background tasks for LoRa IoT
-      for(int i=0; i<100; i++)  
+      for(int i=0; i<50; i++)  
       {
         delay(50);
         digitalWrite(LED_red, HIGH);  // Blink for Dasa 
@@ -1147,7 +1157,7 @@ void loop()
       }
 
       dataString += ",";
-      dataString += String(readBat(8));   // mV - U
+      dataString += String(float(readBat(8))/1000);   // V - U
       dataString += ",";
       dataString += String(readBat(10));  // mA - I
       dataString += ",";
