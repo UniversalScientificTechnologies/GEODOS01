@@ -34,8 +34,13 @@ The core of the detector  - scintillation crystal with [SiPM detector](https://e
 
 ### Production data of used electronic modules
 
-* [SIPMPOWER01A](https://github.com/UniversalScientificTechnologies/AIRDOSC01/tree/AIRDOSC01A/hw/sch_pcb/SIPMPOWER01A)
-* [SIPM01B](https://github.com/UniversalScientificTechnologies/AIRDOSC01/tree/AIRDOSC01A/hw/sch_pcb/SIPM01B/hw/sch_pcb)
-* [PCRD05A](http://mlab.ust.cz/module/PCRD05A)
+* [STEPUPDC02A](https://github.com/MLAB-project/Modules/tree/master/power_supply/STEPUPDC02A)
+* [AIRDOSC01A_PCB01B](https://github.com/UniversalScientificTechnologies/AIRDOSC01/tree/AIRDOSC01A/hw/sch_pcb/AIRDOSC01A_PCB01B)
+* [PCRD06A](https://github.com/mlab-modules/PCRD06A)
 * [GPS01B](http://mlab.ust.cz/module/GPS01B)
 * [DATALOGGER01A](http://mlab.cz/module/DATALOGGER01A)
+* [ALTIMET01A](https://github.com/mlab-modules/ALTIMET01/tree/ALTIMET01A)
+* [ISM02B](https://github.com/mlab-modules/ISM02)
+* [TPS63060V01A](https://github.com/MLAB-project/Modules/tree/master/power_supply/TPS63060V01A)
+* [LION1CELL01B](https://github.com/MLAB-project/Modules/tree/master/power_supply/LION1CELL01B)
+* [SOLARMINI01A](https://github.com/MLAB-project/Modules/tree/master/power_supply/SOLARMINI01A)
