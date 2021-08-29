@@ -2,16 +2,16 @@
 String githash = "51832f3";
 String FWversion = "GEO2"; // Output data format
 // ADC DC offset (3rd channel must be the first channel without noise)
-#define ZERO 256  // 10
-//#define ZERO 258  // 36
+//#define ZERO 256  // 10
+#define ZERO 256  // 36
 //#define ZERO 256  // EC
 #define RANGE 9   // histogram range
 #define NOISE 2   // noise level
 #define EVENTS 500 // maximal number of recorded events
 #define CHANNELS 512    // number of channels in buffer for histogram, including negative numbers
 #define GPSerror 700000 // number of cycles for waitig for GPS in case of GPS error 
-#define GPSdelay  3   // number of measurements between obtaining GPS position
-//#define GPSdelay  60   // number of measurements between obtaining GPS position cca 10 minutes
+//#define GPSdelay  3   // number of measurements between obtaining GPS position
+#define GPSdelay  60   // number of measurements between obtaining GPS position cca 10 minutes
 //!!!#define GPSdelay 2700   // number of measurements between obtaining GPS position
                         // 2700 = cca 12 h
 
@@ -130,6 +130,15 @@ uint16_t hits;
 uint16_t lat_old;
 uint16_t lon_old;
 
+// 1290c00806a20091c057a000a0000036
+// Network Session Key
+static const PROGMEM u1_t NWKSKEY[16] = {0x3F,0x76,0xD6,0xEB,0xFC,0x9A,0x42,0x2A,0xD9,0x06,0x81,0x59,0x8C,0xAE,0x3E,0x60};
+// App Session Key
+static const u1_t PROGMEM APPSKEY[16] = {0xD8,0x5F,0x50,0x3E,0x28,0xC2,0xF6,0x61,0xE2,0x81,0x10,0xF5,0xFF,0x90,0x02,0x2B};
+// Device Address
+static const u4_t DEVADDR = 0x260B4150; 
+
+/*
 // 1290c00806a200905c4aa000a0000013
 // Network Session Key
 static const PROGMEM u1_t NWKSKEY[16] = {0xBC,0x7C,0x13,0xA1,0xBB,0xE1,0xF0,0x77,0x14,0x9D,0x79,0xB8,0x50,0x2D,0xCC,0xD7};
@@ -138,7 +147,6 @@ static const u1_t PROGMEM APPSKEY[16] = {0x4C,0xB7,0x66,0x21,0xB6,0xAA,0xF1,0xF7
 // Device Address
 static const u4_t DEVADDR = 0x260BE73E;
 
-/*
 // 1290c00806a200923813a000a00000ec
 // Network Session Key
 static const PROGMEM u1_t NWKSKEY[16] = {0x4C,0x4D,0x0E,0x77,0x7B,0x3F,0xAD,0xAC,0x93,0xF2,0x62,0x33,0xE5,0x81,0x6C,0x1B};
@@ -817,13 +825,12 @@ void loop()
 
   // GPS **********************
   set_power(GPS_ON);
-//!!!
-//if (false)
+//!!! if (false)
   {
       // make a string for assembling the data to log:
       String dataString = "";
 
-#define MSG_NO 12    // number of logged NMEA messages
+#define MSG_NO 20    // number of logged NMEA messages
 
     {
       // switch to UTC time; UBX-CFG-RATE (6)+6+(2)=14 configuration bytes
