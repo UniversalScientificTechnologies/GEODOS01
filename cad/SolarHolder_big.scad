@@ -10,9 +10,9 @@ module prism(l, w, h){
 screw_diameter = 3.2;
 nut_diameter = 6.6;
 
-$fn = 6;
 angle = 30;
 hldr_thickness = 5;
+$fn = 50;
 
 module HolderPanel() {
 	thickness = 4;
@@ -37,7 +37,8 @@ module HolderPanel() {
 		
 		translate([hldr_length + (length - hldr_length) / 2, panel_margin + (width - panel_margin) / 2, -1]) {
 			#cylinder(r = screw_diameter / 2, h = panel_thickness + thickness * 2 + 2);
-			translate([0, 0, panel_thickness + thickness * 2]){
+			translate([0, 0, 0]){
+				$fn=6;
 				cylinder(r = nut_diameter / 2, h = 2);
 			}
 		}
@@ -67,11 +68,11 @@ module SolarHolder() {
 		cube([length, hldr_thickness, height]);
 		translate([length / 3, hldr_thickness + 1, height / 2]) rotate([90, 0, 0]) {
 			#cylinder(r = screw_diameter / 2, h = hldr_thickness + 2);
-			cylinder(r = nut_diameter / 2, h = 2);
+			translate([0,0,0]){$fn=6; cylinder(r = nut_diameter / 2, h = 2);}
 		}
 		translate([2*length / 3, hldr_thickness + 1, height / 2]) rotate([90, 0, 0]) {
 			#cylinder(r = screw_diameter / 2, h = hldr_thickness + 2);
-			cylinder(r = nut_diameter / 2, h = 2);
+			translate([0,0,0]){$fn=6;cylinder(r = nut_diameter / 2, h = 2);}
 		}
 	}
 
