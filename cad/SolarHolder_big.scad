@@ -35,7 +35,7 @@ module HolderPanel() {
 			cube([hldr_length, width, 2 * thickness + panel_thickness]);
 		}
 		
-		translate([hldr_length + (length - hldr_length) / 2, panel_margin + (width - panel_margin) / 2, -1]) {
+		translate([hldr_length + 4 * (length - hldr_length) / 5, panel_margin + (width - panel_margin) / 2, -1]) {
 			#cylinder(r = screw_diameter / 2, h = panel_thickness + thickness * 2 + 2);
 			translate([0, 0, 0]){
 				$fn=6;
