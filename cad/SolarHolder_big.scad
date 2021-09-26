@@ -37,10 +37,7 @@ module HolderPanel() {
 		
 		translate([hldr_length + 4 * (length - hldr_length) / 5, panel_margin + (width - panel_margin) / 2, -1]) {
 			#cylinder(r = screw_diameter / 2, h = panel_thickness + thickness * 2 + 2);
-			translate([0, 0, 0]){
-				$fn=6;
-				cylinder(r = nut_diameter / 2, h = 2);
-			}
+			cylinder(r = nut_diameter / 2, h = 2, $fn = 6);
 		}
 	}
 
@@ -68,11 +65,11 @@ module SolarHolder() {
 		cube([length, hldr_thickness, height]);
 		translate([length / 3, hldr_thickness + 1, height / 2]) rotate([90, 0, 0]) {
 			#cylinder(r = screw_diameter / 2, h = hldr_thickness + 2);
-			translate([0,0,0]){$fn=6; cylinder(r = nut_diameter / 2, h = 2);}
+			cylinder(r = nut_diameter / 2, h = 2, $fn = 6);
 		}
 		translate([2*length / 3, hldr_thickness + 1, height / 2]) rotate([90, 0, 0]) {
 			#cylinder(r = screw_diameter / 2, h = hldr_thickness + 2);
-			translate([0,0,0]){$fn=6;cylinder(r = nut_diameter / 2, h = 2);}
+			cylinder(r = nut_diameter / 2, h = 2, $fn = 6);
 		}
 	}
 
