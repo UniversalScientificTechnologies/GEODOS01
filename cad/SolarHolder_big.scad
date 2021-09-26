@@ -65,7 +65,11 @@ module SolarHolder() {
 
 	difference() {
 		cube([length, hldr_thickness, height]);
-		translate([length / 2, hldr_thickness + 1, height / 2]) rotate([90, 0, 0]) {
+		translate([length / 3, hldr_thickness + 1, height / 2]) rotate([90, 0, 0]) {
+			#cylinder(r = screw_diameter / 2, h = hldr_thickness + 2);
+			cylinder(r = nut_diameter / 2, h = 2);
+		}
+		translate([2*length / 3, hldr_thickness + 1, height / 2]) rotate([90, 0, 0]) {
 			#cylinder(r = screw_diameter / 2, h = hldr_thickness + 2);
 			cylinder(r = nut_diameter / 2, h = 2);
 		}
