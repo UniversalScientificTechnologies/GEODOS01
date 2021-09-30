@@ -2,18 +2,18 @@
 String githash = "51832f3";
 String FWversion = "CERNOBYL"; // Output data format
 // ADC DC offset (3rd channel must be the first channel without noise)
-#define ZERO 256  // BF
-#define RANGE 9   // histogram range
+#define ZERO 259  // BF
+#define RANGE 250   // histogram range
 #define NOISE 2   // noise level
 #define EVENTS 500 // maximal number of recorded events
 #define CHANNELS 512    // number of channels in buffer for histogram, including negative numbers
 #define GPSerror 700000 // number of cycles for waitig for GPS in case of GPS error 
-#define GPSdelay  3   // number of measurements between obtaining GPS position
+//#define GPSdelay  3   // number of measurements between obtaining GPS position
 //#define GPSdelay  60   // number of measurements between obtaining GPS position cca 10 minutes
-//!!!#define GPSdelay 2700   // number of measurements between obtaining GPS position
+#define GPSdelay 2700   // number of measurements between obtaining GPS position
                         // 2700 = cca 12 h
-//!!!#define GPSWAIT 600 // more than 50 s waiting for GPS fix
-#define GPSWAIT 60 // less waiting for GPS fix
+#define GPSWAIT 600 // more than 50 s waiting for GPS fix
+//#define GPSWAIT 60 // less waiting for GPS fix
 
 // Compiled with: Arduino 1.8.13
 
@@ -564,6 +564,7 @@ void loop()
         if (nomessages > GPSerror) break; // preventing of forever waiting
       }
     }  
+    set_power(GPS_OFF);
 
     {
         set_power(SD_ON);
