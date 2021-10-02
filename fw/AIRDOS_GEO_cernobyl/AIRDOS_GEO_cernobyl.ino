@@ -1,5 +1,5 @@
 #define DEBUG // Please comment it if you are not debugging
-String githash = "51832f3";
+String githash = "a1bf671";
 String FWversion = "CERNOBYL"; // Output data format
 // ADC DC offset (3rd channel must be the first channel without noise)
 #define ZERO 259  // BF
@@ -10,8 +10,8 @@ String FWversion = "CERNOBYL"; // Output data format
 #define GPSerror 700000 // number of cycles for waitig for GPS in case of GPS error 
 //#define GPSdelay  3   // number of measurements between obtaining GPS position
 //#define GPSdelay  60   // number of measurements between obtaining GPS position cca 10 minutes
-#define GPSdelay 2700   // number of measurements between obtaining GPS position
-                        // 2700 = cca 12 h
+#define GPSdelay 2700*2   // number of measurements between obtaining GPS position
+                        // 2700 = cca 12.5 h
 #define GPSWAIT 600 // more than 50 s waiting for GPS fix
 //#define GPSWAIT 60 // less waiting for GPS fix
 
@@ -487,7 +487,9 @@ void loop()
   set_power(GPS_ON);
 //!!! if (false)
   {
-      // make a string for assembling the data to log:
+     delay(100);
+
+     // make a string for assembling the data to log:
       String dataString = "";
 
 #define MSG_NO 20    // number of logged NMEA messages
@@ -688,7 +690,7 @@ void loop()
       if (u_sensor <= (CHANNELS/2)-1 ) {u_sensor += (CHANNELS/2);} else {u_sensor -= (CHANNELS/2);}
 
       if (u_sensor < ZERO) {u_sensor = 0;} else {u_sensor -= ZERO;}
-      
+    
       if (u_sensor <  RANGE)
       {
         buffer[u_sensor]++;
