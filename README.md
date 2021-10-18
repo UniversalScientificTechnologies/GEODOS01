@@ -37,9 +37,13 @@ One GEODOS device is installed in [Chernobyl Red Forest site](https://en.wikiped
 
 ![GEODOS01A block diagram](hw/sch_pcb/GEODOS01A_block.png)
 
+### Sensor element
+
 The core of the detector  - scintillation crystal with [SiPM detector](https://en.wikipedia.org/wiki/Silicon_photomultiplier).
 
-![Scintillation detector](/doc/src/img/GEODOS01A_sensor.jpg)
+![Scintillation detector in box](/doc/src/img/GEODOS01A_sensor.jpg)
+
+![Scintillation detector housing](/doc/src/img/GEODOS01A_sensor_box.jpg)
 
 ### Detailed documentation toused electronic modules
 
