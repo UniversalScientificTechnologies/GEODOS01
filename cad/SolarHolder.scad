@@ -51,18 +51,19 @@ module SolarHolder(){
         //cube([width, length, length*2]);
         union()
         {
-            rotate([angle,0,0]) translate([0,0,0]) cube([width+border, length+border, wall]); // horni
+            rotate([angle,0,0]) translate([0,0,-wall]) cube([width+border, length+border, 2*wall]); // horni
             rotate([0,0,0]) translate([0,0,0]) cube([width+border, (length+border)*cos(angle), border/2]); // dolni
             rotate([90,0,0]) translate([0,0,-(length+border)*cos(angle)]) cube([width+border, (length+border)*sin(angle), wall]); // zadni           
         }
+        rotate([0,0,0]) translate([-border/2,0,-2*border]) cube([width+2*border, (length+border)*cos(angle), 2*border]); // spodni rovina
         rotate([angle,0,0]) translate([border/2,border/2,1.6]) cube([width, length, wall*2]); // ramecek pod clankem
-        rotate([angle,0,0]) translate([border,border,-0.1]) cube([width-border, length-border, wall*2]); // dira pod clankem 
-        rotate([90,0,0]) translate([3,3,-(length+border)*cos(angle)-wall]) cube([width+border-6, (length+border)*sin(angle)-5, 2*wall+0.1]); // dira zadni  
+        rotate([angle,0,0]) translate([border*2,border*2,-5*wall]) cube([width-3*border, length-3*border, wall*6]); // dira pod clankem 
+        rotate([90,0,0]) translate([3,3,-(length+border)*cos(angle)-wall]) cube([width+border-6, (length+border)*sin(angle)-7, 2*wall+0.1]); // dira zadni  
         
         //rotate([angle-90,0,0]) translate([(width+border)/2,30,0]) support_screw_end(3, 0, length); // holes
         //#rotate([-90,0,0]) translate([width/2,0,0]) support_screw_end(1, -30.1, length);
         //translate([width/2, length/2, -10]) rotate([0,0,0]) cylinder(100, 8.6/2, 8.6/2);
- MLAB_grid_xoffset = 6;//3.88;
+ MLAB_grid_xoffset = 11.5;//3.88;
 MLAB_grid_yoffset = 10;
 MLAB_grid = 10.16;       
 pedestal_height = 2;   // designed for use the MLAB standard 12mm screws.
