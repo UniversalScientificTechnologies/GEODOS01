@@ -4,6 +4,16 @@
 
 ![Solar powered GEODOS01A](/doc/src/img/GEODOS01A.jpg "GEODOS01A prototype")
 
+### Locations
+
+
+#### Chernobyl Red Forest
+
+
+One GEODOS device is installed in [Chernobyl Red Forest site](https://en.wikipedia.org/wiki/Red_Forest).
+
+![GEODOS01A Installed in Chernobyl Red Forest site](/doc/src/img/GEODOS_Chernobyl_redforest_site.jpg "GEODOS01A Installed in Chernobyl Red Forest site")
+
 
 ### Technical parameters
 
