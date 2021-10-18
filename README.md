@@ -34,15 +34,14 @@ One GEODOS device is installed in [Chernobyl Red Forest site](https://en.wikiped
 
 
 ### Device block diagram
+
 ![GEODOS01A block diagram](hw/sch_pcb/GEODOS01A_block.png)
-
-
 
 The core of the detector  - scintillation crystal with [SiPM detector](https://en.wikipedia.org/wiki/Silicon_photomultiplier).
 
 ![Scintillation detector](/doc/src/img/GEODOS01A_sensor.jpg)
 
-### Production data of used electronic modules
+### Detailed documentation toused electronic modules
 
 * [STEPUPDC02A](https://github.com/MLAB-project/Modules/tree/master/power_supply/STEPUPDC02A)
 * [AIRDOSC01A_PCB01B](https://github.com/UniversalScientificTechnologies/AIRDOSC01/tree/AIRDOSC01A/hw/sch_pcb/AIRDOSC01A_PCB01B)
