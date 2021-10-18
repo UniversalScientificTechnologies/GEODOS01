@@ -46,7 +46,7 @@ The core of the detector  - scintillation crystal with [SiPM detector](https://e
 
 * [STEPUPDC02A](https://github.com/MLAB-project/Modules/tree/master/power_supply/STEPUPDC02A)
 * [AIRDOSC01A_PCB01B](https://github.com/UniversalScientificTechnologies/AIRDOSC01/tree/AIRDOSC01A/hw/sch_pcb/AIRDOSC01A_PCB01B)
-* [PCRD06A](https://github.com/mlab-modules/PCRD06A)
+* [PCRD06A](https://github.com/mlab-modules/PCRD06)
 * [GPS01B](https://www.mlab.cz/module/GPS01B)
 * [DATALOGGER01A](http://mlab.cz/module/DATALOGGER01A)
 * [ALTIMET01A](https://github.com/mlab-modules/ALTIMET01/tree/ALTIMET01A)
