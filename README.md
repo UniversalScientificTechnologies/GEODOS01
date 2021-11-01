@@ -1,4 +1,5 @@
-# GEODOS01A
+# GEODOS01A - Ground level ionizing radiation monitor
+
 *Open-source scintillation detector of ionizing radiation. The device can be further modified according to specific requirements. Character of its construction makes it especially suitable for placement into mountaints to in-field measurement*
 
 
@@ -13,6 +14,10 @@
 One GEODOS device is installed in [Chernobyl Red Forest site](https://en.wikipedia.org/wiki/Red_Forest).
 
 ![GEODOS01A Installed in Chernobyl Red Forest site](/doc/src/img/GEODOS_Chernobyl_redforest_site.jpg "GEODOS01A Installed in Chernobyl Red Forest site")
+
+
+![GEODOS01A raw data before temperature compensation](/doc/src/img/GEODOS_chernobyl_graph.png)
+
 
 
 ### Technical parameters
@@ -45,7 +50,12 @@ The core of the detector  - scintillation crystal with [SiPM detector](https://e
 
 ![Scintillation detector housing](/doc/src/img/GEODOS01A_sensor_box.jpg)
 
-### Detailed documentation toused electronic modules
+### Data storage
+
+The primary raw data are stored in SDcard memory. The IoT network is used to telemetry data transfer, for device monitoring (e.g. Temperature, Humidity, Pressure, Battery voltage etc.).  We using normally the [TTN](https://www.thethingsnetwork.org/), but the device could be configured for use any IoT LoRa based network. 
+For remote areas, mounting a IoT gateway in radio range of GEODOS instruments could be also a good option. 
+
+### Detailed documentation of used electronic modules
 
 * [STEPUPDC02A](https://github.com/MLAB-project/Modules/tree/master/power_supply/STEPUPDC02A)
 * [AIRDOSC01A_PCB01B](https://github.com/UniversalScientificTechnologies/AIRDOSC01/tree/AIRDOSC01A/hw/sch_pcb/AIRDOSC01A_PCB01B)
