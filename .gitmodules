@@ -16,3 +16,9 @@
 [submodule "doc/DATALOGGER01"]
 	path = doc/DATALOGGER01
 	url = git@github.com:mlab-modules/DATALOGGER01.git
+[submodule "doc/TPS63060V01"]
+	path = doc/TPS63060V01
+	url = git@github.com:mlab-modules/TPS63060V01.git
+[submodule "doc/SOLARMINI01"]
+	path = doc/SOLARMINI01
+	url = git@github.com:mlab-modules/SOLARMINI01.git
