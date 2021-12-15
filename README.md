@@ -65,13 +65,13 @@ For remote areas, mounting a IoT gateway in radio range of GEODOS instruments co
 
 ### Detailed documentation of used electronic modules
 
-* [STEPUPDC02A](https://github.com/MLAB-project/Modules/tree/master/power_supply/STEPUPDC02A)
-* [AIRDOSC01A_PCB01B](https://github.com/UniversalScientificTechnologies/AIRDOSC01/tree/AIRDOSC01A/hw/sch_pcb/AIRDOSC01A_PCB01B)
+* [STEPUPDC02A](https://github.com/mlab-modules/STEPUPDC02)
+* [AIRDOSC01A_PCB01C](https://github.com/UniversalScientificTechnologies/AIRDOSC01/tree/AIRDOSC01A/hw/sch_pcb/AIRDOSC01A_PCB01C)
 * [PCRD06A](https://github.com/mlab-modules/PCRD06)
 * [GPS01B](https://www.mlab.cz/module/GPS01B)
 * [DATALOGGER01A](http://mlab.cz/module/DATALOGGER01A)
-* [ALTIMET01A](https://github.com/mlab-modules/ALTIMET01/tree/ALTIMET01A)
+* [ALTIMET01A](https://github.com/mlab-modules/ALTIMET01)
 * [ISM02B](https://github.com/mlab-modules/ISM02)
-* [TPS63060V01A](https://github.com/MLAB-project/Modules/tree/master/power_supply/TPS63060V01A)
+* [TPS63060V01A](https://github.com/mlab-modules/TPS63060V01)
 * [LION1CELL01B](https://github.com/mlab-modules/LION1CELL01)
-* [SOLARMINI01A](https://github.com/MLAB-project/Modules/tree/master/power_supply/SOLARMINI01A)
+* [SOLARMINI01A](https://github.com/mlab-modules/SOLARMINI01)
