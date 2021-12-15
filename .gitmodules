@@ -1,0 +1,27 @@
+[submodule "doc/PCRD06"]
+	path = doc/PCRD06
+	url = git@github.com:mlab-modules/PCRD06.git
+[submodule "doc/GPS01"]
+	path = doc/GPS01
+	url = git@github.com:mlab-modules/GPS01.git
+[submodule "doc/ALTIMET01"]
+	path = doc/ALTIMET01
+	url = git@github.com:mlab-modules/ALTIMET01.git
+[submodule "doc/ISM02"]
+	path = doc/ISM02
+	url = git@github.com:mlab-modules/ISM02.git
+[submodule "doc/LION1CELL01"]
+	path = doc/LION1CELL01
+	url = git@github.com:mlab-modules/LION1CELL01.git
+[submodule "doc/DATALOGGER01"]
+	path = doc/DATALOGGER01
+	url = git@github.com:mlab-modules/DATALOGGER01.git
+[submodule "doc/TPS63060V01"]
+	path = doc/TPS63060V01
+	url = git@github.com:mlab-modules/TPS63060V01.git
+[submodule "doc/SOLARMINI01"]
+	path = doc/SOLARMINI01
+	url = git@github.com:mlab-modules/SOLARMINI01.git
+[submodule "doc/STEPUPDC02"]
+	path = doc/STEPUPDC02
+	url = git@github.com:mlab-modules/STEPUPDC02.git
