@@ -22,3 +22,6 @@
 [submodule "doc/SOLARMINI01"]
 	path = doc/SOLARMINI01
 	url = git@github.com:mlab-modules/SOLARMINI01.git
+[submodule "doc/STEPUPDC02"]
+	path = doc/STEPUPDC02
+	url = git@github.com:mlab-modules/STEPUPDC02.git
