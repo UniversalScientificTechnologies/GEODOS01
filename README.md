@@ -65,7 +65,7 @@ For remote areas, mounting a IoT gateway in radio range of GEODOS instruments co
 
 ### Detailed documentation of used electronic modules
 
-* [STEPUPDC02A](https://github.com/MLAB-project/Modules/tree/master/power_supply/STEPUPDC02A)
+* [STEPUPDC02A](https://github.com/mlab-modules/STEPUPDC02)
 * [AIRDOSC01A_PCB01C](https://github.com/UniversalScientificTechnologies/AIRDOSC01/tree/AIRDOSC01A/hw/sch_pcb/AIRDOSC01A_PCB01C)
 * [PCRD06A](https://github.com/mlab-modules/PCRD06)
 * [GPS01B](https://www.mlab.cz/module/GPS01B)
