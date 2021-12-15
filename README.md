@@ -19,6 +19,14 @@ One GEODOS device is installed in [Chernobyl Red Forest site](https://en.wikiped
 ![GEODOS01A raw data before temperature compensation](/doc/src/img/GEODOS_chernobyl_graph.png)
 
 
+#### Chernobyl Red Forest
+
+
+One GEODOS device is installed on [Polednik watch tower](https://cs.wikipedia.org/wiki/Poledn%C3%ADk_(%C5%A0umava)).
+
+
+![GEODOS01A Installed on Polednik site](/doc/src/img/GEODOS_Polednik_site.jpg)
+
 
 ### Technical parameters
 
@@ -52,8 +60,8 @@ The core of the detector  - scintillation crystal with [SiPM detector](https://e
 
 ### Data storage
 
-The primary raw data are stored in SDcard memory. The IoT network is used to telemetry data transfer, for device monitoring (e.g. Temperature, Humidity, Pressure, Battery voltage etc.).  We using normally the [TTN](https://www.thethingsnetwork.org/), but the device could be configured for use any IoT LoRa based network. 
-For remote areas, mounting a IoT gateway in radio range of GEODOS instruments could be also a good option. 
+The primary raw data are stored in SDcard memory. The IoT network is used to telemetry data transfer, for device monitoring (e.g. Temperature, Humidity, Pressure, Battery voltage etc.).  We using normally the [TTN](https://www.thethingsnetwork.org/), but the device could be configured for use any IoT LoRa based network.
+For remote areas, mounting a IoT gateway in radio range of GEODOS instruments could be also a good option.
 
 ### Detailed documentation of used electronic modules
 
