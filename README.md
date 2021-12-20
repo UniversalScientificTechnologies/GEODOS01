@@ -19,6 +19,14 @@ One GEODOS device is installed in [Chernobyl Red Forest site](https://en.wikiped
 ![GEODOS01A raw data before temperature compensation](/doc/src/img/GEODOS_chernobyl_graph.png)
 
 
+#### Chernobyl Red Forest
+
+
+One GEODOS device is installed on [Polednik watch tower](https://cs.wikipedia.org/wiki/Poledn%C3%ADk_(%C5%A0umava)).
+
+
+![GEODOS01A Installed on Polednik site](/doc/src/img/GEODOS_Polednik_site.jpg)
+
 
 ### Technical parameters
 
@@ -52,18 +60,18 @@ The core of the detector  - scintillation crystal with [SiPM detector](https://e
 
 ### Data storage
 
-The primary raw data are stored in SDcard memory. The IoT network is used to telemetry data transfer, for device monitoring (e.g. Temperature, Humidity, Pressure, Battery voltage etc.).  We using normally the [TTN](https://www.thethingsnetwork.org/), but the device could be configured for use any IoT LoRa based network. 
-For remote areas, mounting a IoT gateway in radio range of GEODOS instruments could be also a good option. 
+The primary raw data are stored in SDcard memory. The IoT network is used to telemetry data transfer, for device monitoring (e.g. Temperature, Humidity, Pressure, Battery voltage etc.).  We using normally the [TTN](https://www.thethingsnetwork.org/), but the device could be configured for use any IoT LoRa based network.
+For remote areas, mounting a IoT gateway in radio range of GEODOS instruments could be also a good option.
 
 ### Detailed documentation of used electronic modules
 
-* [STEPUPDC02A](https://github.com/MLAB-project/Modules/tree/master/power_supply/STEPUPDC02A)
-* [AIRDOSC01A_PCB01B](https://github.com/UniversalScientificTechnologies/AIRDOSC01/tree/AIRDOSC01A/hw/sch_pcb/AIRDOSC01A_PCB01B)
+* [STEPUPDC02A](https://github.com/mlab-modules/STEPUPDC02)
+* [AIRDOSC01A_PCB01C](https://github.com/UniversalScientificTechnologies/AIRDOSC01/tree/AIRDOSC01A/hw/sch_pcb/AIRDOSC01A_PCB01C)
 * [PCRD06A](https://github.com/mlab-modules/PCRD06)
 * [GPS01B](https://www.mlab.cz/module/GPS01B)
 * [DATALOGGER01A](http://mlab.cz/module/DATALOGGER01A)
-* [ALTIMET01A](https://github.com/mlab-modules/ALTIMET01/tree/ALTIMET01A)
+* [ALTIMET01A](https://github.com/mlab-modules/ALTIMET01)
 * [ISM02B](https://github.com/mlab-modules/ISM02)
-* [TPS63060V01A](https://github.com/MLAB-project/Modules/tree/master/power_supply/TPS63060V01A)
+* [TPS63060V01A](https://github.com/mlab-modules/TPS63060V01)
 * [LION1CELL01B](https://github.com/mlab-modules/LION1CELL01)
-* [SOLARMINI01A](https://github.com/MLAB-project/Modules/tree/master/power_supply/SOLARMINI01A)
+* [SOLARMINI01A](https://github.com/mlab-modules/SOLARMINI01)
