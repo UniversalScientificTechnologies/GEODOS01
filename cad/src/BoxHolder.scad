@@ -3,7 +3,7 @@ roztec_Y=38.1;
 vyska=35;
 vyska_obruby=10;
 delka_sroubu=35;
-kolik_sroubu_kouka=6;
+kolik_sroubu_kouka=4.8;
 
 //Parametry sroubu
 prumer_sroubu=3.4;
@@ -45,72 +45,17 @@ R01_vyska_preryti_statoru=20;
 //Držák ložisek, rotoru, senzoru
 
 module WINDGAUGE02A_S01()
+{
+    difference()
     {
-    //valec se zavitem
-    union()  
-        {
-        difference()
-        {
-            union()
-            {
-            
-            //spodní doraz
-            cylinder (h = S01_sila_materialu, r=S01_prumer_vnitrni/2+5/2*S01_sila_materialu, $fn=100);  
-
-
-            //krycí ovál - usnadnění povolení
-            difference()
-            {
-            cylinder (h = vyska_obruby, r=S01_prumer_vnitrni/2+5/2*S01_sila_materialu, $fn=100); 
-
-            cylinder (h = vyska_obruby+0.01, r=S01_prumer_vnitrni/2+3/2*S01_sila_materialu, $fn=100);            
-            
-            }    
-            }            
-
-        //odstranění vnitřní výplně
-        translate([0,0,S01_sila_materialu])
-            cylinder (h = vyska_obruby+0.01, r=S01_prumer_vnitrni/2-S01_hloubka_zavitu/2-S01_sila_materialu, $fn=100); 
-            
-        //otvor na ložisko         
-        translate([0,0,S01_sila_materialu/2])           
-            cylinder (h = S01_sila_materialu+0.01, r=(lozisko_prumer_vnejsi+0.2)/2, center = true, $fn=100);          
-        //otvory na hlavu šroubu ve dně 
-        //otvor na hlavu šroubu 1
-        translate([-roztec_X/2,-roztec_Y/2,(vyska_obruby)/2])           
-            cylinder (h = vyska_obruby+0.01, r=(prumer_hlavy_sroubu)/2, center = true, $fn=100);
-            
-        //otvor na šroub 2 
-        translate([roztec_X/2,-roztec_Y/2,(vyska_obruby)/2])           
-            cylinder (h = vyska_obruby+0.01, r=(prumer_hlavy_sroubu)/2, center = true, $fn=100);           
-            
-        //otvor na šroub 3
-        translate([roztec_X/2,roztec_Y/2,(vyska_obruby)/2])           
-            cylinder (h = vyska_obruby+0.01, r=(prumer_hlavy_sroubu)/2, center = true, $fn=100);
-
-        //otvor na šroub 4
-        translate([-roztec_X/2,roztec_Y/2,(vyska_obruby)/2])           
-            cylinder (h = vyska_obruby+0.01, r=(prumer_hlavy_sroubu)/2, center = true, $fn=100);          
-     
-        }
-
-    //otvor na ložisko
-    difference()
-    {  
-    translate([0,0,(vyska_obruby)/2])   
-        cylinder (h = vyska_obruby, r=(lozisko_prumer_vnejsi+2*S01_sila_materialu)/2, center = true, $fn=100);     
-    
-    translate([0,0,vyska_obruby/2])
-      cylinder (h = vyska_obruby+0.01, r=(lozisko_prumer_vnejsi+0.2)/2, center = true, $fn=100);
-      
-   
-
-    }
-
-    difference()
-    { 
         union()
         { 
+        translate([0,0,S01_sila_materialu/4]) 
+            minkowski()
+            {
+                cube([50,50,S01_sila_materialu/2], center=true);
+                cylinder(r=4, h=0.0001);
+            }
         //uchyty na modul
         //sloupek 1
         translate([-roztec_X/2,-roztec_Y/2,0]) 
@@ -124,16 +69,24 @@ module WINDGAUGE02A_S01()
 
         translate([-roztec_X/2,roztec_Y/2,0])  
             SLOUPEK();
-        }
+        }    
+        union()
+        { 
+        translate([-roztec_X/2,-roztec_Y/2,0]) 
+            dira();
+
+        translate([roztec_X/2,-roztec_Y/2,0])  
+            dira();
         
-        translate([0,0,0])    
-            cylinder (h = R01_vyska_preryti_statoru+lozisko_vyska+S01_sila_materialu, r=(lozisko_prumer_vnejsi+0.2)/2, $fn=100);  
-   
-       
-    
+        translate([roztec_X/2,roztec_Y/2,0])  
+            dira();
+
+        translate([-roztec_X/2,roztec_Y/2,0])  
+            dira();
+        }    
     }
-        }
-    }
+}
+
 
 
 //sloupek na senzor
@@ -141,10 +94,16 @@ module SLOUPEK()
 {    
 translate([0,0,0]) 
     difference () 
-    {
-        
-        cylinder (h = vyska, r= (sirka_matky+1)/2+S01_sila_materialu/2, $fn=20);
-        
+    {       
+        cylinder (h = vyska, r= (sirka_matky+1)/2+S01_sila_materialu/2, $fn=20);    
+    }       
+}
+
+module dira()
+{    
+translate([0,0,0]) 
+    union () 
+    {        
         translate([0,0,vyska-vyska_matky]) 
             cylinder (h = vyska_matky+0.01, r= (sirka_matky+0.2)/2, $fn=6);
         
@@ -155,12 +114,13 @@ translate([0,0,0])
             cylinder (h = vyska-(delka_sroubu-kolik_sroubu_kouka)+0.02, r= (prumer_hlavy_sroubu)/2, $fn=40);
     
         translate([0,0,vyska-(delka_sroubu-kolik_sroubu_kouka)]) 
-            cylinder(h=2+0.02, r1=(prumer_hlavy_sroubu)/2, r2=(prumer_sroubu+0.2)/2);  
-    
+            cylinder(h=2+0.02, r1=(prumer_hlavy_sroubu)/2, r2=(prumer_sroubu+0.2)/2);     
     }       
 }
 
-
   
-WINDGAUGE02A_S01(); 
+difference()
+{
+    WINDGAUGE02A_S01(); 
 
+}
