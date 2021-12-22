@@ -4,7 +4,7 @@
 // 1024 ch. from 0.27 to cca 15 MeV
 
 #define DEBUG // Please comment it if you are not debugging
-String gittag = "0";
+String gittag = "v1";
 String FWversion = "C_LS_1024"; // Output data format
 
 #define RANGE 25  // histogram range
@@ -542,7 +542,7 @@ void loop()
         if (nomessages > GPSerror) break; // preventing of forever waiting
       }
     }  
-    set_power(GPS_OFF);
+    //set_power(GPS_OFF);
 
     {
         set_power(SD_ON);
