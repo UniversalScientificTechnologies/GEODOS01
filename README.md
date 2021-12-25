@@ -1,4 +1,4 @@
-# GEODOS01A - Ground level ionizing radiation monitor
+# GEODOS01A - stationary ionizing radiation monitor
 
 *Open-source scintillation detector of ionizing radiation. The device can be further modified according to specific requirements. Character of its construction makes it especially suitable for placement into mountaints to in-field measurement*
 
