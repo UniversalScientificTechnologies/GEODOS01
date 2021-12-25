@@ -4,8 +4,6 @@
 
 ![GEODOS01A Installed on Polednik site](/doc/src/img/GEODOS_Polednik_site.jpg)
 
-![Solar powered GEODOS01A](/doc/src/img/GEODOS01A.jpg "GEODOS01A prototype")
-
 ### Locations
 
 GEODOS devices are mounted on multiple significant places around Europe at this moment. 
