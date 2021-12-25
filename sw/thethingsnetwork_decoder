@@ -1,0 +1,50 @@
+function Decoder(bytes, port) {
+  if (bytes[0] == 0xff) {
+    var lat = bytes[1] + (bytes[2] << 8);
+    var lon = bytes[3] + (bytes[4] << 8);
+     
+    var f_lat = (lat + (7 * 65535)) / 10000;
+    var f_lon = (lon + (2 * 65535)) / 10000;
+     
+    return {
+      'Lat' : f_lat,
+      'Lon' : f_lon,
+    };
+  }
+  else
+  {
+    var temperature;
+    var current;
+    var battery_voltage = bytes[0] + 175;
+
+    var current_sign = bytes[2] & 1;
+    var battery_current = bytes[1];
+    if (current_sign) {
+      current = 0xFFFFFF00 | battery_current;  // fill in most significant bits with 1's
+    }
+    else {
+      current = battery_current;
+    }
+      
+    var voltage = battery_voltage / 100;
+    
+    var temp = bytes[2] >> 1;
+    var temp_sign = bytes[2] >> 7;
+    if (temp_sign) {
+      temperature = 0xFFFFFF80 | temp;  // fill in most significant bits with 1's
+    }
+    else {
+      temperature = temp;
+    }
+    
+    var hits = bytes[3] + (bytes[4] << 8);
+    
+    return {
+      'V' : voltage,
+      'mA' : current,
+      '℃' : temperature,
+      'hits' : hits
+    };
+  }
+}
+
