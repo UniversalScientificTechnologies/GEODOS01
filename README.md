@@ -6,7 +6,7 @@
 
 ### Locations
 
-GEODOS devices are mounted on multiple significant places around Europe at this moment. 
+GEODOS devices are mounted on multiple significant places around Europe at this moment.
 
 #### Chernobyl Red Forest
 
@@ -42,7 +42,7 @@ GEODOS devices are installed on multiple locations in Šumava. The one example i
 
 ### Device block diagram
 
-![GEODOS01A block diagram](hw/sch_pcb/GEODOS01A_block.png)
+![GEODOS01A block diagram](hw/sch_pcb/GEODOS01B_block.png)
 
 ### Sensor element
 
