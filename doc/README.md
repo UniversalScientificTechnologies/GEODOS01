@@ -10,7 +10,7 @@ Při instalaci zařízení musí být splněno:
 
 Po splnění těchto podmínek je možné zařízení zapnout vypínačem. Směrem k LED je zapnuto.
 
-![GEODOS01 power switch](/src/img/GEODOS_power_switch.png)
+![GEODOS01 power switch](/doc/src/img/GEODOS_power_switch.png)
 
 Po zapnutí se spustí GPS, což je indikováno LED na modulu GPS02B do kterého vede GPS anténa. Následně zařízení přibližně minutu čeká na získání fixu pozice. Získání fixu je indikováno blikáním zelené LED na modulu GPS02B.
 Následně každých 10sekund blikne červená LED na levo od vypínače, což indikuje zápis na SDkartu.
