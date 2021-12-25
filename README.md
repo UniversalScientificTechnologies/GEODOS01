@@ -1,32 +1,28 @@
-# GEODOS01A - stationary ionizing radiation monitor
+# GEODOS01A - Stationary ionizing radiation monitor
 
 *Open-source scintillation detector of ionizing radiation. The device can be further modified according to specific requirements. Character of its construction makes it especially suitable for placement into mountaints to in-field measurement*
 
+![GEODOS01A Installed on Polednik site](/doc/src/img/GEODOS_Polednik_site.jpg)
 
 ![Solar powered GEODOS01A](/doc/src/img/GEODOS01A.jpg "GEODOS01A prototype")
 
 ### Locations
 
+GEODOS devices are mounted on multiple significant places around Europe at this moment. 
 
 #### Chernobyl Red Forest
-
 
 One GEODOS device is installed in [Chernobyl Red Forest site](https://en.wikipedia.org/wiki/Red_Forest).
 
 ![GEODOS01A Installed in Chernobyl Red Forest site](/doc/src/img/GEODOS_Chernobyl_redforest_site.jpg "GEODOS01A Installed in Chernobyl Red Forest site")
 
-
 ![GEODOS01A raw data before temperature compensation](/doc/src/img/GEODOS_chernobyl_graph.png)
 
+#### Šumava mountains
 
-#### Chernobyl Red Forest
-
-
-One GEODOS device is installed on [Polednik watch tower](https://cs.wikipedia.org/wiki/Poledn%C3%ADk_(%C5%A0umava)).
-
+GEODOS devices are installed on multiple locations in Šumava. The one example is [Polednik watch tower](https://cs.wikipedia.org/wiki/Poledn%C3%ADk_(%C5%A0umava)).
 
 ![GEODOS01A Installed on Polednik site](/doc/src/img/GEODOS_Polednik_site.jpg)
-
 
 ### Technical parameters
 
