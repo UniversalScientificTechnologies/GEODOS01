@@ -8,12 +8,33 @@ Při instalaci zařízení musí být splněno:
   * GPS anténa musí být umístěna tak, aby měla výhled na oblohu (Nalepena na vrchní stranu krabice, do volného okna v observatoři nebo podobně)
   * Do zařízení musí být vložena zformátovaná SDkarta na kterou se budou zapisovat data.  
 
+## Zapnutí přístroje
+
 Po splnění těchto podmínek je možné zařízení zapnout vypínačem. Směrem k LED je zapnuto.
 
 ![GEODOS01 power switch](/doc/src/img/GEODOS_power_switch.png)
 
 Po zapnutí se spustí GPS, což je indikováno LED na modulu GPS02B do kterého vede GPS anténa. Následně zařízení přibližně minutu čeká na získání fixu pozice. Získání fixu je indikováno blikáním zelené LED na modulu GPS02B.
 Následně každých 10sekund blikne červená LED na levo od vypínače, což indikuje zápis na SDkartu.
+
+## Získávání dat
+
+GEODOS dovede data na SDkartu zaznamenávat velmi dlouho. Šest měsíců záznamu odpovídá přibližně 500MB dat. Běžné velikosti SDkaret umožňují kontinuální záznam řádově v rocích provozu. Z tohoto důvodu je GEODOS vybaven LoRa telemetrií, aby bylo možno přibližně monitorovat jeho funkčnost.  
+Používat GEODOS tímto způsobem ale není úplně rozumné, neboť tato vzdálená telemetrie není schopna monitorovat kvalitu dat. Je tak dobré data manuálně stahovat buď pravidelně, nebo na základě výskytu významných událostí. 
+
+## Vypnutí přístroje a vyčtení dat
+
+Díky způsobu fungování, kdy přístroj zaznamenává na SDkartu jednou za 10 sekund je vhodné vypnutí provést tak, že **počkáme na dvojbliknutí červené LED vlevo od vypínače a následně vypínačem vypneme napájení**.
+Tento postup minimalizuje možnost poškození souborového systému na SDkartě nedokončeným zápisem. 
+
+Následně je možná SDkartu vyjmout zatáhnutím nehtem (SDkarta je umístěna v prostoru mezi vypínačem a indikační LED).
+
+![SDcard removing](/doc/src/img/GEODOS_power_switch.png)
+
+SDkartu lze přečíst v běžné čtečce SDkaret. Vyzkoušeným typem je například [Kingston USB 3.0 High-Speed Card Reader](https://www.kingston.com/us/memory-card-readers/usb-3-0-high-speed-media-reader)
+
+Na SDkartě je pak za normílních okolností pouze jeden soubor DATALOG.TXT, který obsahuje všechny zaznamenané informace.  
+
 
 ## Service information
 
