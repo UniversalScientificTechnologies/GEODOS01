@@ -4,8 +4,7 @@
 // 1024 ch. from 0.27 to cca 15 MeV
 
 #define DEBUG // Please comment it if you are not debugging
-String gittag = "v1";
-String FWversion = "C_LS_1024"; // Output data format
+String FWversion = "C_LS_1024_v2"; // Output data format
 
 #define RANGE 25  // histogram range
 #define EVENTS 500 // maximal number of recorded events
@@ -321,7 +320,7 @@ void setup()
   //wdt_reset(); //Reset WDT
 
   // make a string for device identification output
-  String dataString = "$AIRDOS," + FWversion + "," + gittag + ","; // FW version and Git hash
+  String dataString = "$AIRDOS," + FWversion + ",0,"; // FW version and Git hash
 
   if (digitalRead(17)) // Protection against sensor mallfunction 
   {
@@ -389,7 +388,7 @@ void loop()
 {
   uint16_t buffer[RANGE];       // buffer for histogram
   uint32_t hit_time[EVENTS];    // time of events
-  uint8_t hit_channel[EVENTS];  // energy of events
+  uint16_t hit_channel[EVENTS];  // energy of events
 
   //!!!wdt_reset(); //Reset WDT
 
