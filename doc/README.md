@@ -20,16 +20,16 @@ Následně každých 10sekund blikne červená LED na levo od vypínače, což i
 ## Získávání dat
 
 GEODOS dovede data na SDkartu zaznamenávat velmi dlouho. Šest měsíců záznamu odpovídá přibližně 500MB dat. Běžné velikosti SDkaret umožňují kontinuální záznam řádově v rocích provozu. Z tohoto důvodu je GEODOS vybaven LoRa telemetrií, aby bylo možno přibližně monitorovat jeho funkčnost.  
-Používat GEODOS tímto způsobem ale není úplně rozumné, neboť tato vzdálená telemetrie není schopna monitorovat kvalitu dat. Je tak dobré data manuálně stahovat buď pravidelně, nebo na základě výskytu významných událostí. 
+Používat GEODOS tímto způsobem ale není úplně rozumné, neboť tato vzdálená telemetrie není schopna monitorovat kvalitu dat. Je tak dobré data manuálně stahovat buď pravidelně, nebo na základě výskytu významných událostí.
 
 ## Vypnutí přístroje a vyčtení dat
 
 Díky způsobu fungování, kdy přístroj zaznamenává na SDkartu jednou za 10 sekund je vhodné vypnutí provést tak, že **počkáme na dvojbliknutí červené LED vlevo od vypínače a následně vypínačem vypneme napájení**.
-Tento postup minimalizuje možnost poškození souborového systému na SDkartě nedokončeným zápisem. 
+Tento postup minimalizuje možnost poškození souborového systému na SDkartě nedokončeným zápisem.
 
 Následně je možná SDkartu vyjmout zatáhnutím nehtem (SDkarta je umístěna v prostoru mezi vypínačem a indikační LED).
 
-![SDcard removing](/doc/src/img/GEODOS_power_switch.png)
+![SDcard removing](/doc/src/img/GEODOS_SDcard_pull-out.jpg)
 
 SDkartu lze přečíst v běžné čtečce SDkaret. Vyzkoušeným typem je například [Kingston USB 3.0 High-Speed Card Reader](https://www.kingston.com/us/memory-card-readers/usb-3-0-high-speed-media-reader)
 
