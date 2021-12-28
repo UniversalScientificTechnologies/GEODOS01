@@ -4,18 +4,17 @@
 // 1024 ch. from 0.27 to cca 15 MeV
 
 #define DEBUG // Please comment it if you are not debugging
-String FWversion = "C_LS_1024_v2"; // Output data format
+String FWversion = "C_ABS_1024_v1"; // Output data format
 
-#define RANGE 25  // histogram range
+#define RANGE 28  // histogram range
 #define EVENTS 500 // maximal number of recorded events
 #define CHANNELS 512    // number of channels in buffer for histogram, including negative numbers
 #define GPSerror 700000 // number of cycles for waitig for GPS in case of GPS error 
-//#define GPSdelay  3   // number of measurements between obtaining GPS position
-//#define GPSdelay  60   // number of measurements between obtaining GPS position cca 10 minutes
-#define GPSdelay 2700   // number of measurements between obtaining GPS position and time
+#define GPSdelay  3*6   // number of measurements between obtaining GPS position cca 3 minutes
+//#define GPSdelay 2700   // number of measurements between obtaining GPS position and time
                         // 2700 = cca 12.5 h
-#define GPSWAIT 600 // more than 50 s waiting for GPS fix
-//#define GPSWAIT 60 // less waiting for GPS fix
+//#define GPSWAIT 600 // more than 50 s waiting for GPS fix
+#define GPSWAIT 0 // less waiting for GPS fix
 
 // Compiled with: Arduino 1.8.13
 
@@ -262,7 +261,7 @@ void setup()
 
   // Open serial communications
   Serial.begin(38400);
-  Serial1.begin(38400);
+  Serial1.begin(9600);
 
   Serial.println("#Cvak...");
  
@@ -342,6 +341,19 @@ void setup()
     dataString += "NaN";    
   }
 
+  set_power(GPS_ON);
+  delay(100);
+  {
+    // airborne <2g; UBX-CFG-NAV5 (6)+36+(2)=44 configuration bytes
+    const char cmd[44]={0xB5, 0x62 ,0x06 ,0x24 ,0x24 ,0x00 ,0xFF ,0xFF ,0x07 ,0x03 ,0x00 ,0x00 ,0x00 ,0x00 ,0x10 ,0x27 , 0x00 ,0x00 ,0x05 ,0x00 ,0xFA ,0x00 ,0xFA ,0x00 ,0x64 ,0x00 ,0x5E ,0x01 ,0x00 ,0x3C ,0x00 ,0x00 , 0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x85 ,0x2A};
+    for (int n=0;n<(44);n++) Serial1.write(cmd[n]); 
+  }
+  {
+    // switch to UTC time; UBX-CFG-RATE (6)+6+(2)=14 configuration bytes
+    const char cmd[14]={0xB5 ,0x62 ,0x06 ,0x08 ,0x06 ,0x00 ,0xE8 ,0x03 ,0x01 ,0x00 ,0x00 ,0x00 ,0x00 ,0x37};
+    for (int n=0;n<(14);n++) Serial1.write(cmd[n]); 
+  }
+  
   Serial.println("#Hmmm...");
   
   {
@@ -367,7 +379,7 @@ void setup()
     {
       dataFile.println(dataString);  // write to SDcard (800 ms)     
       dataFile.close();
-      digitalWrite(LED_red, HIGH);  // Blink for Dasa
+      digitalWrite(LED_red, HIGH); // Blink for Dasa
       Serial.println(dataString);  // print SN to terminal 
       digitalWrite(LED_red, LOW);          
     }  
@@ -388,7 +400,7 @@ void loop()
 {
   uint16_t buffer[RANGE];       // buffer for histogram
   uint32_t hit_time[EVENTS];    // time of events
-  uint16_t hit_channel[EVENTS];  // energy of events
+  uint16_t hit_channel[EVENTS]; // energy of events
 
   //!!!wdt_reset(); //Reset WDT
 
@@ -455,21 +467,14 @@ void loop()
 
 
   // GPS **********************
-  set_power(GPS_ON);
 //!!! if (false)
   {
-     delay(100);
 
      // make a string for assembling the data to log:
       String dataString = "";
 
 #define MSG_NO 20    // number of logged NMEA messages
 
-    {
-      // switch to UTC time; UBX-CFG-RATE (6)+6+(2)=14 configuration bytes
-      const char cmd[14]={0xB5 ,0x62 ,0x06 ,0x08 ,0x06 ,0x00 ,0xE8 ,0x03 ,0x01 ,0x00 ,0x00 ,0x00 ,0x00 ,0x37};
-      for (int n=0;n<(14);n++) Serial1.write(cmd[n]); 
-    }
     // flush serial buffer
     while (Serial1.available()) Serial1.read();
 
@@ -491,7 +496,7 @@ void loop()
           messages++;   
           //wdt_reset();
         };   // Prevent endless waiting
-        if (messages > GPSWAIT) break; // maximal waiting for fix
+        if (messages >= GPSWAIT) break; // maximal waiting for fix
 
         if (flag && (incomingByte == '*')) break;
         flag = false;
