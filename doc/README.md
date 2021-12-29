@@ -44,12 +44,19 @@ For the firmware upgrade, the USB-RS232 converter is needed.  Normally is used t
 
 ![PL2303XHD cable](/doc/src/img/PL2303XHD.jpg)
 
+
+#### Cable connection
+
 |USB converter cable | DATALOGGER01A |
 |--------------|---------------|
 |RX | TX0|
 |TX | RX0|
 |RTS | RST# |
 |GND | GND|
+
+Physical realization
+
+![PL2303XHD cable - DATALOGGER01A connection](/doc/src/img/GEODOS_firmware_upgrade.jpg)
 
 #### Upgrade process
 
