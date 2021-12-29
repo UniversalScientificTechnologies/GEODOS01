@@ -46,7 +46,7 @@ For the firmware upgrade, the USB-RS232 converter is needed.  Normally is used t
 
 |USB converter cable | DATALOGGER01A |
 |--------------|---------------|
-|RX | TX0| 
+|RX | TX0|
 |TX | RX0|
 |RTS | RST# |
 |GND | GND|
@@ -55,8 +55,94 @@ For the firmware upgrade, the USB-RS232 converter is needed.  Normally is used t
 
     cd fw/bin/FIRMWARE_VERSION
     ./program.sh
-    
 
+Expected output:
+
+    $ ./program.sh
+
+    avrdude: Version 6.3-20190619
+             Copyright (c) 2000-2005 Brian Dean, http://www.bdmicro.com/
+             Copyright (c) 2007-2014 Joerg Wunsch
+
+             System wide configuration file is "./avrdude.conf"
+             User configuration file is "/home/kaklik/.avrduderc"
+             User configuration file does not exist or is not a regular file, skipping
+
+             Using Port                    : /dev/ttyUSB0
+             Using Programmer              : arduino
+             Overriding Baud Rate          : 115200
+             AVR Part                      : ATmega1284P
+             Chip Erase delay              : 55000 us
+             PAGEL                         : PD7
+             BS2                           : PA0
+             RESET disposition             : dedicated
+             RETRY pulse                   : SCK
+             serial program mode           : yes
+             parallel program mode         : yes
+             Timeout                       : 200
+             StabDelay                     : 100
+             CmdexeDelay                   : 25
+             SyncLoops                     : 32
+             ByteDelay                     : 0
+             PollIndex                     : 3
+             PollValue                     : 0x53
+             Memory Detail                 :
+
+                                      Block Poll               Page                           Polled
+               Memory Type Mode Delay Size  Indx Paged  Size   Size #Pages MinW  MaxW       ReadBack
+               ----------- ---- ----- ----- ---- ------ ------ ---- ------ ----- ----- --------    -
+               eeprom        65    10   128    0 no       4096    8      0  9000  9000 0xff     0xff
+               flash         65    10   256    0 yes    131072  256    512  4500  4500 0xff     0xff
+               lock           0     0     0    0 no          1    0      0  9000  9000 0x00     0x00
+               lfuse          0     0     0    0 no          1    0      0  9000  9000 0x00     0x00
+               hfuse          0     0     0    0 no          1    0      0  9000  9000 0x00     0x00
+               efuse          0     0     0    0 no          1    0      0  9000  9000 0x00     0x00
+               signature      0     0     0    0 no          3    0      0     0     0 0x00     0x00
+               calibration    0     0     0    0 no          1    0      0     0     0 0x00     0x00
+
+             Programmer Type : Arduino
+             Description     : Arduino
+             Hardware Version: 3
+             Firmware Version: 8.0
+             Vtarget         : 0.3 V
+             Varef           : 0.3 V
+             Oscillator      : 28.800 kHz
+             SCK period      : 3.3 us
+
+    avrdude: AVR device initialized and ready to accept instructions
+
+    Reading | ################################################## | 100% 0.00s
+
+    avrdude: Device signature = 0x1e9705 (probably m1284p)
+    avrdude: safemode: lfuse reads as 0
+    avrdude: safemode: hfuse reads as 0
+    avrdude: safemode: efuse reads as 0
+    avrdude: reading input file "./AIRDOSC_1024_LS.ino.hex"
+    avrdude: writing flash (25132 bytes):
+
+    Writing | ################################################## | 100% 3.28s
+
+    avrdude: 25132 bytes of flash written
+    avrdude: verifying flash memory against ./AIRDOSC_1024_LS.ino.hex:
+    avrdude: load data flash data from input file ./AIRDOSC_1024_LS.ino.hex:
+    avrdude: input file ./AIRDOSC_1024_LS.ino.hex contains 25132 bytes
+    avrdude: reading on-chip flash data:
+
+    Reading | ################################################## | 100% 2.28s
+
+    avrdude: verifying ...
+    avrdude: 25132 bytes of flash verified
+
+    avrdude: safemode: lfuse reads as 0
+    avrdude: safemode: hfuse reads as 0
+    avrdude: safemode: efuse reads as 0
+    avrdude: safemode: Fuses OK (E:00, H:00, L:00)
+
+    avrdude done.  Thank you.
+
+The new firmware version should be marked at beginnig of  DATALOG.TXT file after the power-up and logging some data. e.g.
+
+    $AIRDOS,C_LS_1024_v2,...
 
 ### Scintillation detector
 
