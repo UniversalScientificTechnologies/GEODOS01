@@ -1,19 +1,13 @@
 #define DEBUG // Please comment it if you are not debugging
-String githash = "51832f3";
-String FWversion = "GEO2"; // Output data format
-// ADC DC offset (3rd channel must be the first channel without noise)
-//#define ZERO 256  // 10
-#define ZERO 256  // 36
-//#define ZERO 256  // EC
-#define RANGE 9   // histogram range
-#define NOISE 2   // noise level
+String githash = "0";
+String FWversion = "GEO_1024_v0"; // Output data format
+
+#define RANGE 25   // histogram range
 #define EVENTS 500 // maximal number of recorded events
-#define CHANNELS 512    // number of channels in buffer for histogram, including negative numbers
 #define GPSerror 700000 // number of cycles for waitig for GPS in case of GPS error 
-#define GPSdelay  3   // number of measurements between obtaining GPS position
-//#define GPSdelay  60   // number of measurements between obtaining GPS position cca 10 minutes
-//!!!#define GPSdelay 2700   // number of measurements between obtaining GPS position
-                        // 2700 = cca 12 h
+//#define GPSdelay  3   // number of measurements between obtaining GPS position
+#define GPSdelay 346   // number of measurements between obtaining GPS position and sending telemetry
+                       // 346 = cca 1 h
 
 // Compiled with: Arduino 1.8.13
 
@@ -130,13 +124,13 @@ uint16_t hits;
 uint16_t lat_old;
 uint16_t lon_old;
 
-// 1290c00806a200923c12a000a00000bf
+// 1290c00806a200905c4aa000a0000013
 // Network Session Key
-static const PROGMEM u1_t NWKSKEY[16] = {0x30,0x6E,0x13,0xCA,0x44,0x89,0xFF,0x31,0x5C,0x0A,0x08,0xED,0xE1,0x67,0x5D,0x4B};
+static const PROGMEM u1_t NWKSKEY[16] = {0xBC,0x7C,0x13,0xA1,0xBB,0xE1,0xF0,0x77,0x14,0x9D,0x79,0xB8,0x50,0x2D,0xCC,0xD7};
 // App Session Key
-static const u1_t PROGMEM APPSKEY[16] = {0x4D,0x2F,0xBF,0xA2,0xD3,0x57,0xC6,0x52,0xB0,0xC4,0x74,0xE2,0xE3,0xAE,0xE1,0x7C};
+static const u1_t PROGMEM APPSKEY[16] = {0x4C,0xB7,0x66,0x21,0xB6,0xAA,0xF1,0xF7,0xEE,0x2E,0xAA,0x7E,0xCC,0x5C,0xFC,0x16};
 // Device Address
-static const u4_t DEVADDR = 0x260BD310;
+static const u4_t DEVADDR = 0x260BE73E;
 
 /*
 // 1290c00806a200905c4aa000a0000013
@@ -480,19 +474,19 @@ void setup()
   Wire.setClock(100000);
 
   // Open serial communications
-  Serial.begin(9600);
-  Serial1.begin(9600);
+  Serial.begin(38400);
+  Serial1.begin(38400);
 
   Serial.println("#Cvak...");
  
   ADMUX = (analog_reference << 6) | ((PIN | 0x10) & 0x1F);
   
-  ADCSRB = 0;               // Switching ADC to Free Running mode
-  sbi(ADCSRA, ADATE);       // ADC autotrigger enable (mandatory for free running mode)
-  sbi(ADCSRA, ADSC);        // ADC start the first conversions
-  sbi(ADCSRA, 2);           // 0x100 = clock divided by 16, 1 MHz, 13 us for 13 cycles of one AD conversion, 24 us fo 1.5 cycle for sample-hold
-  cbi(ADCSRA, 1);        
-  cbi(ADCSRA, 0);        
+  //ADCSRB = 0;               // Switching ADC to Free Running mode
+  //sbi(ADCSRA, ADATE);       // ADC autotrigger enable (mandatory for free running mode)
+  //sbi(ADCSRA, ADSC);        // ADC start the first conversions
+  sbi(ADCSRA, 2);           // 0x111 = clock divided by 128, 125 kHz, 104 us for 13 cycles of one AD conversion, 12 us fo 1.5 cycle for sample-hold
+  sbi(ADCSRA, 1);        
+  sbi(ADCSRA, 0);        
 
   pinMode(LED_red, OUTPUT);
   digitalWrite(LED_red, LOW);  
@@ -506,36 +500,6 @@ void setup()
     digitalWrite(LED_red, LOW);  
   }
 
-  // measurement of ADC offset
-  ADMUX = (analog_reference << 6) | 0b10001; // Select +A1,-A1 for offset correction
-  delay(200);
-  ADCSRB = 0;               // Switching ADC to Free Running mode
-  sbi(ADCSRA, ADATE);       // ADC autotrigger enable (mandatory for free running mode)
-  sbi(ADCSRA, ADSC);        // ADC start the first conversions
-  sbi(ADCSRA, 2);           // 0x100 = clock divided by 16, 62.5 kHz, 208 us for 13 cycles of one AD conversion, 24 us fo 1.5 cycle for sample-hold
-  cbi(ADCSRA, 1);
-  cbi(ADCSRA, 0);
-  sbi(ADCSRA, ADIF);                  // reset interrupt flag from ADC
-  while (bit_is_clear(ADCSRA, ADIF)); // wait for the first conversion
-  sbi(ADCSRA, ADIF);                  // reset interrupt flag from ADC
-  lo = ADCL;
-  hi = ADCH;
-  ADMUX = (analog_reference << 6) | 0b10000; // Select +A0,-A1 for measurement
-  ADCSRB = 0;               // Switching ADC to Free Running mode
-  sbi(ADCSRA, ADATE);       // ADC autotrigger enable (mandatory for free running mode)
-  sbi(ADCSRA, ADSC);        // ADC start the first conversions
-  sbi(ADCSRA, 2);           // 0x100 = clock divided by 16, 62.5 kHz, 208 us for 13 cycles of one AD conversion, 24 us fo 1.5 cycle for sample-hold
-  cbi(ADCSRA, 1);
-  cbi(ADCSRA, 0);
-  // combine the two bytes
-  u_sensor = (hi << 7) | (lo >> 1);
-  // manage negative values
-  if (u_sensor <= (CHANNELS / 2) - 1 ) {
-    u_sensor += (CHANNELS / 2);
-  } else {
-    u_sensor -= (CHANNELS / 2);
-  }
-  //base_offset = u_sensor;
 
   // Initiation of RTC
   Wire.beginTransmission(0x51); // init clock
@@ -853,7 +817,11 @@ void loop()
         incomingByte = Serial1.read();
         nomessages = 0;
         
-        if (incomingByte == '$') {messages++;   wdt_reset();}; // Prevent endless waiting
+        if (incomingByte == '$') 
+        {
+          messages++;   
+          //wdt_reset();
+        }; // Prevent endless waiting
         if (messages > 600) break; // more than 50 s
 
         if (flag && (incomingByte == '*')) break;
@@ -1023,72 +991,33 @@ void loop()
   
   for(uint16_t i=0; i<(GPSdelay); i++)  // measurements between GPS aquisition
   {
+    PORTB = 1;                          // Set reset output for peak detector to H
+    ADMUX = (analog_reference << 6) | 0b00000; // Select A0 single ended
+    DDRB = 0b10011111;                  // Reset peak detector
+    delayMicroseconds(2);              
+    DDRB = 0b10011110;
+    delayMicroseconds(8);   
+
     for(int n=0; n<RANGE; n++) // clear histogram
     {
       buffer[n]=0;
     }
     uint16_t hit_count = 0;    // clear events
   
-    // measurement of ADC offset
-    ADMUX = (analog_reference << 6) | 0b10001; // Select +A1,-A1 for offset correction
-    delay(50);
-    ADCSRB = 0;               // Switching ADC to Free Running mode
-    sbi(ADCSRA, ADATE);       // ADC autotrigger enable (mandatory for free running mode)
-    sbi(ADCSRA, ADSC);        // ADC start the first conversions
-    sbi(ADCSRA, 2);           // 0x100 = clock divided by 16, 62.5 kHz, 208 us for 13 cycles of one AD conversion, 24 us fo 1.5 cycle for sample-hold
-    cbi(ADCSRA, 1);        
-    cbi(ADCSRA, 0);        
-    sbi(ADCSRA, ADIF);                  // reset interrupt flag from ADC
-    while (bit_is_clear(ADCSRA, ADIF)); // wait for the first conversion 
-    sbi(ADCSRA, ADIF);                  // reset interrupt flag from ADC
-    lo = ADCL;
-    hi = ADCH;
-    ADMUX = (analog_reference << 6) | 0b10000; // Select +A0,-A1 for measurement
-    ADCSRB = 0;               // Switching ADC to Free Running mode
-    sbi(ADCSRA, ADATE);       // ADC autotrigger enable (mandatory for free running mode)
-    sbi(ADCSRA, ADSC);        // ADC start the first conversions
-    sbi(ADCSRA, 2);           // 0x110 = clock divided by 64, 250 kHz, 52 us for 13 cycles of one AD conversion, cca 8 us fo 1.5 cycle for sample-hold
-    sbi(ADCSRA, 1);        
-    cbi(ADCSRA, 0);        
-    //sbi(ADCSRA, 0);        
-    // combine the two bytes
-    u_sensor = (hi << 7) | (lo >> 1);
-    // manage negative values
-    if (u_sensor <= (CHANNELS/2)-1 ) {u_sensor += (CHANNELS/2);} else {u_sensor -= (CHANNELS/2);}
-    //offset = u_sensor;
-    
-    PORTB = 1;                          // Set reset output for peak detector to H
-    sbi(ADCSRA, ADIF);                  // reset interrupt flag from ADC
-    while (bit_is_clear(ADCSRA, ADIF)); // wait for the first dummy conversion 
-    DDRB = 0b10011111;                  // Reset peak detector
-    delayMicroseconds(100);             // guaranteed reset
-    DDRB = 0b10011110;
-  
-    sbi(ADCSRA, ADIF);        // reset interrupt flag from ADC
-  
-    //uint16_t suppress = 0;      
-      
-    while (bit_is_clear(ADCSRA, ADIF)); // wait for dummy conversion 
-    DDRB = 0b10011111;                  // Reset peak detector
-    asm("NOP");                         // cca 6 us for 2k2 resistor and 1k capacitor in peak detector
-    asm("NOP");                         
-    asm("NOP");                         
-    asm("NOP");                         
-    asm("NOP");                         
-    DDRB = 0b10011110;
-    sbi(ADCSRA, ADIF);                  // reset interrupt flag from ADC
     
     // dosimeter integration
-    for (uint32_t i=0; i<65535*4; i++)    // cca 16 s
+    for (uint32_t i=0; i<100000; i++)    // cca 10.4 s
     //for (uint32_t i=0; i<10000; i++)    // faster for testing
     {
-      wdt_reset(); //Reset WDT
+      //wdt_reset(); //Reset WDT
 
-      while (bit_is_clear(ADCSRA, ADIF)); // wait for end of conversion 
-      delayMicroseconds(8); // wait for 1.5 cycle of ADC clock for sample/hold for next conversion
+      // start the conversion
+      sbi(ADCSRA, ADSC);   
+      delayMicroseconds(20); // wait more than 1.5 cycle of ADC clock for sample/hold
       DDRB = 0b10011111;                  // Reset peak detector
       delayMicroseconds(2);              
       DDRB = 0b10011110;
+      while (bit_is_clear(ADCSRA, ADIF)); // wait for end of conversion 
   
       // we have to read ADCL first; doing so locks both ADCL
       // and ADCH until ADCH is read.  reading ADCL second would
@@ -1099,11 +1028,7 @@ void loop()
       sbi(ADCSRA, ADIF);                  // reset interrupt flag from ADC
   
       // combine the two bytes
-      u_sensor = (hi << 7) | (lo >> 1);
-      // manage negative values
-      if (u_sensor <= (CHANNELS/2)-1 ) {u_sensor += (CHANNELS/2);} else {u_sensor -= (CHANNELS/2);}
-
-      if (u_sensor < ZERO) {u_sensor = 0;} else {u_sensor -= ZERO;}
+      u_sensor = (hi << 8) | lo;          // 1024
       
       if (u_sensor <  RANGE)
       {
@@ -1118,7 +1043,6 @@ void loop()
         }
         hit_count++;
       }
-      if (u_sensor > NOISE) hits++;
     }  
 
     
@@ -1217,8 +1141,6 @@ Serial.println("#11");
         }
   
         set_power(SD_OFF);
-        //!!!DDRB = 0b10011110;
-        //!!!PORTB = 0b00000001;  // SDcard Power OFF  
       }          
       digitalWrite(LED_red, HIGH);  // Blink for Dasa
       Serial.println(dataString);   // print to terminal (additional 700 ms in DEBUG mode)
@@ -1244,8 +1166,6 @@ Serial.println("#11");
        
       {
         set_power(SD_ON);
-        //!!!DDRB = 0b10111110;
-        //!!!PORTB = 0b00001111;  // SDcard Power ON
 
         // make sure that the default chip select pin is set to output
         // see if the card is present and can be initialized:
@@ -1275,20 +1195,10 @@ Serial.println("#11");
         }
   
         set_power(SD_OFF);
-        //!!!DDRB = 0b10011110;
-        //!!!PORTB = 0b00000001;  // SDcard Power OFF  
       }          
       digitalWrite(LED_red, HIGH);  // Blink for Dasa
       Serial.println(dataString);   // print to terminal (additional 700 ms in DEBUG mode)
       digitalWrite(LED_red, LOW);                
     } 
-    /*
-    set_power(LORA_ON);
-    Serial.println("#1");
-    // Let LMIC handle background tasks for LoRa IoT
-    os_runstep();
-    Serial.println("#11");
-    set_power(LORA_OFF);
-    */  
   }
 }
