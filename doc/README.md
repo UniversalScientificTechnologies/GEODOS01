@@ -38,11 +38,31 @@ Na SDkartě je pak za normílních okolností pouze jeden soubor DATALOG.TXT, kt
 
 ## Service information
 
+### Firmware upgrade
+
+For the firmware upgrade, the USB-RS232 converter is needed.  Normally is used the [USB232R02](https://github.com/mlab-modules/USB232R02), but any USBcable could be used.
+
+![PL2303XHD cable](/doc/src/img/PL2303XHD.jpg)
+
+|USB converter cable | DATALOGGER01A |
+|--------------|---------------|
+|RX | TX0| 
+|TX | RX0|
+|RTS | RST# |
+|GND | GND|
+
+#### Upgrade process
+
+    cd fw/bin/FIRMWARE_VERSION
+    ./program.sh
+    
+
+
 ### Scintillation detector
 
 Scintilační krystaly použité v GEODOSech mají různé rozměry. Rozměr krystalů je napsán na boku bílé kovové krabičky ve které je krystal umístěn.
 
-**!Při otevření krabičky je nutné mít vypnuté napájení křemíkového fotonásobiče!** Při zapnutém napájení teče na světle skrz SiPM příliš velký proud a fotonásobič se zničí přehřátím.
+**Při otevření krabičky je nutné mít vypnuté napájení křemíkového fotonásobiče** Při zapnutém napájení teče na světle skrz SiPM příliš velký proud a fotonásobič se zničí přehřátím.
 
 
 
