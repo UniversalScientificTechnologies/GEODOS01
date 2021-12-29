@@ -40,7 +40,7 @@ Na SDkartě je pak za normílních okolností pouze jeden soubor DATALOG.TXT, kt
 
 ### Firmware upgrade
 
-For the firmware upgrade, the USB-RS232 converter is needed.  Normally is used the [USB232R02](https://github.com/mlab-modules/USB232R02), but any USBcable could be used.
+For the firmware upgrade, the USB-RS232 converter is needed.  Normally is used the [USB232R02](https://github.com/mlab-modules/USB232R02), but any [USBcable](https://techfun.sk/produkt/kabel-pl2303hx-usb-na-ttl-rs232/) could be used.
 
 ![PL2303XHD cable](/doc/src/img/PL2303XHD.jpg)
 
