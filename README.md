@@ -31,6 +31,8 @@ GEODOS devices are installed on multiple locations in Šumava. The one example i
 * Record’s content: energy and time of each event
 * Record’s periodicity: 10 s (maximal dead time 2 s)
 * Time resolution: 20 us
+* ADC Conversion time 104 us 
+* [Dead time](https://en.wikipedia.org/wiki/Dead_time) 2 us
 * Accuracy of event’s time: 500 ns
 * Energy range: 0.3 to 1 MeV (0,2 MeV resolution)
 * Open-source HW and SW
