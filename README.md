@@ -70,4 +70,4 @@ For remote areas, mounting a IoT gateway in radio range of GEODOS instruments co
 * [ISM02B](https://github.com/mlab-modules/ISM02)
 * [TPS63060V01A](https://github.com/mlab-modules/TPS63060V01)
 * [LION1CELL01B](https://github.com/mlab-modules/LION1CELL01)
-* [SOLARMINI01A](https://github.com/mlab-modules/SOLARMINI01)
+* [SOLARMINI01B](https://github.com/mlab-modules/SOLARMINI01)
