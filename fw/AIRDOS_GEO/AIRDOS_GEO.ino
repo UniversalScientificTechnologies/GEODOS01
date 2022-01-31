@@ -1,10 +1,10 @@
 #define DEBUG // Please comment it if you are not debugging
-String githash = "0";
-String FWversion = "GEO_1024_v0"; // Output data format
+String FWversion = "GEO_1024_v1"; // Output data format
 
 #define RANGE 25   // histogram range
 #define EVENTS 500 // maximal number of recorded events
 #define GPSerror 700000 // number of cycles for waitig for GPS in case of GPS error 
+#define MSG_NO 20 // number of recorded NMEA messages
 //#define GPSdelay  3   // number of measurements between obtaining GPS position
 #define GPSdelay 346   // number of measurements between obtaining GPS position and sending telemetry
                        // 346 = cca 1 h
@@ -124,15 +124,49 @@ uint16_t hits;
 uint16_t lat_old;
 uint16_t lon_old;
 
-// 1290c00806a200905c4aa000a0000013
-// Network Session Key
-static const PROGMEM u1_t NWKSKEY[16] = {0xBC,0x7C,0x13,0xA1,0xBB,0xE1,0xF0,0x77,0x14,0x9D,0x79,0xB8,0x50,0x2D,0xCC,0xD7};
-// App Session Key
-static const u1_t PROGMEM APPSKEY[16] = {0x4C,0xB7,0x66,0x21,0xB6,0xAA,0xF1,0xF7,0xEE,0x2E,0xAA,0x7E,0xCC,0x5C,0xFC,0x16};
-// Device Address
-static const u4_t DEVADDR = 0x260BE73E;
+// 1290c00806a200924413a000a00000b2
+String crystal = "NaI(Tl)-D16x30";
+static const PROGMEM u1_t NWKSKEY[16] = {0x3C,0x23,0x32,0x61,0x55,0x5A,0x3E,0xA8,0x85,0x38,0xE7,0x3C,0x1C,0xB0,0x00,0xB9};
+static const u1_t PROGMEM APPSKEY[16] = {0xA6,0xBB,0x6A,0x5D,0xF5,0x48,0x8C,0x2A,0xA8,0xE1,0xEF,0x20,0xCE,0xFD,0x88,0xFC};
+static const u4_t DEVADDR = 0x260B7FBD; 
 
 /*
+// 1290c00806a200908013a000a00000dd
+String crystal = "NaI(Tl)-D18x30";
+static const PROGMEM u1_t NWKSKEY[16] = {0xA0,0x32,0xE7,0xEC,0x37,0x14,0x83,0x38,0xD5,0xBC,0x33,0x63,0xDE,0x07,0xE8,0x07};
+static const u1_t PROGMEM APPSKEY[16] = {0x05,0x23,0x95,0x5B,0x55,0x60,0x26,0x13,0xB7,0xC6,0xAB,0xCD,0x3E,0xE9,0xF4,0xBC};
+static const u4_t DEVADDR = 0x260B08E8; 
+
+// 1290c00806a20090b413a000a0000070
+String crystal = "NaI(Tl)-D18x30";
+static const PROGMEM u1_t NWKSKEY[16] = {0xA5,0x4F,0x8E,0xA4,0x48,0x4E,0xD3,0xAC,0x65,0xCD,0x7D,0x47,0xE5,0xFC,0x1B,0x0D};
+static const u1_t PROGMEM APPSKEY[16] = {0x3C,0x1E,0x87,0xA7,0xB1,0x17,0xB0,0x2E,0x06,0xE7,0xF6,0x9F,0x48,0x5E,0x1E,0x02};
+static const u4_t DEVADDR = 0x260B0655; 
+
+// 1290c00806a20090c013a000a0000086
+String crystal = "D16x30";
+static const PROGMEM u1_t NWKSKEY[16] = {0xD8,0xF7,0x35,0x50,0x0C,0x85,0x10,0xEA,0x5E,0xFA,0xCD,0xEF,0x89,0xBC,0x11,0xAC};
+static const u1_t PROGMEM APPSKEY[16] = {0x93,0x67,0xC1,0x39,0xA6,0x1E,0xF3,0x9D,0xDB,0x3A,0xB2,0xA7,0xFA,0x5C,0x52,0x48};
+static const u4_t DEVADDR = 0x260BB492; 
+
+// 1290c00806a200924413a000a00000b2
+String crystal = "NaI(Tl)-D16x30";
+static const PROGMEM u1_t NWKSKEY[16] = {0x3C,0x23,0x32,0x61,0x55,0x5A,0x3E,0xA8,0x85,0x38,0xE7,0x3C,0x1C,0xB0,0x00,0xB9};
+static const u1_t PROGMEM APPSKEY[16] = {0xA6,0xBB,0x6A,0x5D,0xF5,0x48,0x8C,0x2A,0xA8,0xE1,0xEF,0x20,0xCE,0xFD,0x88,0xFC};
+static const u4_t DEVADDR = 0x260B7FBD; 
+
+// 1290c00806a20090e413a000a000007c
+String crystal = "NaI(Tl)-D17x40";
+static const PROGMEM u1_t NWKSKEY[16] = {0x5E,0x20,0x13,0x24,0xE7,0x43,0x2E,0xDE,0x69,0x9E,0xA5,0xB4,0x4C,0x52,0xA3,0xD9};
+static const u1_t PROGMEM APPSKEY[16] = {0x08,0x51,0x2D,0x61,0x85,0x6E,0x4B,0x1E,0xE7,0x87,0x0E,0x13,0x9A,0x6B,0x1F,0xF7};
+static const u4_t DEVADDR = 0x260BB491; 
+
+// 1290c00806a200921812a000a0000045
+String crystal = "NaI(Tl)-D18x30";
+static const PROGMEM u1_t NWKSKEY[16] = {0xCA,0x89,0x44,0x10,0xDA,0x01,0xA0,0xD5,0x5E,0xBA,0x01,0xBE,0xB0,0x33,0x91,0x85};
+static const u1_t PROGMEM APPSKEY[16] = {0x4F,0x5F,0xB3,0x12,0xE1,0x16,0x0B,0x91,0xAC,0x78,0x11,0xA1,0x6A,0x00,0x72,0x0A};
+static const u4_t DEVADDR = 0x260B06DE; 
+
 // 1290c00806a200905c4aa000a0000013
 // Network Session Key
 static const PROGMEM u1_t NWKSKEY[16] = {0xBC,0x7C,0x13,0xA1,0xBB,0xE1,0xF0,0x77,0x14,0x9D,0x79,0xB8,0x50,0x2D,0xCC,0xD7};
@@ -158,11 +192,9 @@ static const u1_t PROGMEM APPSKEY[16] = {0xD8,0x5F,0x50,0x3E,0x28,0xC2,0xF6,0x61
 static const u4_t DEVADDR = 0x260B4150; 
 
 // 1290c00806a20091e412a000a0000010
-// Network Session Key
+String crystal = "NaI(Tl)-D16x30";
 static const PROGMEM u1_t NWKSKEY[16] = {0xF2,0x28,0xA1,0xB1,0xF4,0xD9,0xB9,0x89,0xAD,0x30,0x91,0x2B,0xC1,0x87,0x45,0x49};
-// App Session Key
 static const u1_t PROGMEM APPSKEY[16] = {0x9C,0x55,0xE5,0x6C,0x0E,0xBE,0xCD,0x3A,0x29,0xE3,0x79,0x85,0x2C,0xDC,0x33,0x40};
-// Device Address
 static const u4_t DEVADDR = 0x260B1BEA; 
 
 // 1290c00806a200923c12a000a00000bf
@@ -402,10 +434,16 @@ void set_power(uint8_t state)
       PORTB &= 0b11110001;
       break;
     case GPS_ON:
+      Serial1.begin(38400);
       digitalWrite(GPSpower, HIGH);  
       break;      
     case GPS_OFF:
-      digitalWrite(GPSpower, LOW);  
+      digitalWrite(GPSpower, LOW);
+      Serial1.end();  
+      pinMode(10, OUTPUT);  // RX1
+      digitalWrite(10, LOW);  
+      pinMode(11, OUTPUT);  // TX1   
+      digitalWrite(10, LOW);  
       break;
     case LORA_ON:
       digitalWrite(IOT_CS, LOW);  
@@ -475,7 +513,6 @@ void setup()
 
   // Open serial communications
   Serial.begin(38400);
-  Serial1.begin(38400);
 
   Serial.println("#Cvak...");
  
@@ -534,7 +571,7 @@ void setup()
   //wdt_reset(); //Reset WDT
 
   // make a string for device identification output
-  String dataString = "$AIRDOS," + FWversion + "," + githash + ","; // FW version and Git hash
+  String dataString = "$AIRDOS," + FWversion + "," + crystal + ","; // FW version and Git hash
 
   if (digitalRead(17)) // Protection against sensor mallfunction 
   {
@@ -789,141 +826,25 @@ void loop()
 
   // GPS **********************
   set_power(GPS_ON);
-//!!! if (false)
+  delay(30);  
   {
-      // make a string for assembling the data to log:
-      String dataString = "";
-
-#define MSG_NO 20    // number of logged NMEA messages
-
-    {
-      // switch to UTC time; UBX-CFG-RATE (6)+6+(2)=14 configuration bytes
-      const char cmd[14]={0xB5 ,0x62 ,0x06 ,0x08 ,0x06 ,0x00 ,0xE8 ,0x03 ,0x01 ,0x00 ,0x00 ,0x00 ,0x00 ,0x37};
-      for (int n=0;n<(14);n++) Serial1.write(cmd[n]); 
-    }
-    // flush serial buffer
-    while (Serial1.available()) Serial1.read();
-
-    boolean flag = false;
-    char incomingByte; 
-    int messages = 0;
-    uint32_t nomessages = 0;
-
-    while(true)
-    {
-      if (Serial1.available()) 
-      {
-        // read the incoming byte:
-        incomingByte = Serial1.read();
-        nomessages = 0;
-        
-        if (incomingByte == '$') 
-        {
-          messages++;   
-          //wdt_reset();
-        }; // Prevent endless waiting
-        if (messages > 600) break; // more than 50 s
-
-        if (flag && (incomingByte == '*')) break;
-        flag = false;
-
-        if (incomingByte == 'A') flag = true;   // Waiting for FIX
-      }
-      else
-      {
-        nomessages++;  
-        if (nomessages > GPSerror) break; // preventing of forever waiting
-      }
-    }
-    
-    // make a string for assembling the NMEA to log:
-    dataString = "";
-
-    flag = false;
-    messages = 0;
-    nomessages = 0;
-    while(true)
-    {
-      if (Serial1.available()) 
-      {
-        // read the incoming byte:
-        incomingByte = Serial1.read();
-        nomessages = 0;
-        
-        if (incomingByte == '$') {flag = true; messages++;};
-        if (messages > MSG_NO)
-        {
-          readRTC();
-                
-          dataString += "$TIME,";
-          dataString += String(tm); 
-          dataString += ".";
-          dataString += String(tm_s100); 
-          
-          break;
-        }
-        
-        // say what you got:
-        if (flag && (messages<=MSG_NO)) dataString+=incomingByte;
-      }
-      else
-      {
-        nomessages++;  
-        if (nomessages > GPSerror) break; // preventing of forever waiting
-      }
-    }  
-
-    {
-        set_power(SD_ON);
-        
-        // make sure that the default chip select pin is set to output
-        // see if the card is present and can be initialized:
-        if (!SD.begin(SS)) 
-        {
-          Serial.println("#Card failed, or not present");
-          // don't do anything more:
-          return;
-        }
-        
-        // open the file. note that only one file can be open at a time,
-        // so you have to close this one before opening another.
-        File dataFile = SD.open("datalog.txt", FILE_WRITE);
-        
-        // if the file is available, write to it:
-        if (dataFile) 
-        {
-          digitalWrite(LED_red, HIGH);  // Blink for Dasa
-          dataFile.println(dataString);  // write to SDcard (800 ms)     
-          digitalWrite(LED_red, LOW);          
-          dataFile.close();
-        }  
-        // if the file isn't open, pop up an error:
-        else 
-        {
-          Serial.println("#error opening datalog.txt");
-        }
-        
-        set_power(SD_OFF);
-    }  
-#ifdef DEBUG
-    Serial.println(dataString);  // print to terminal (additional 700 ms)
-    //!!!wdt_reset(); //Reset WDT
-#endif
+    // switch to UTC time; UBX-CFG-RATE (6)+6+(2)=14 configuration bytes
+    const char cmd[14]={0xB5 ,0x62 ,0x06 ,0x08 ,0x06 ,0x00 ,0xE8 ,0x03 ,0x01 ,0x00 ,0x00 ,0x00 ,0x00 ,0x37};
+    for (int n=0;n<(14);n++) Serial1.write(cmd[n]); 
   }
 
   {
     TinyGPSPlus gps;
-
+    int16_t gpschars = 0;
     while (true)
     {
       if (Serial1.available() > 0) 
       {
         gps.encode(Serial1.read());
+        if (gpschars++ > 20000) break;
+        if (gps.location.isUpdated()) break;
       }
-      if (gps.location.isUpdated()) break;
-      if (gps.charsProcessed() > 200); break;
     } 
-    set_power(GPS_OFF);
 
     Serial.print("#");
     Serial.print(gps.charsProcessed());
@@ -947,7 +868,7 @@ void loop()
     Serial.print(lat_diff);
     Serial.print(" londiff ");
     Serial.println(lon_diff);
-
+ 
     if ((abs(lat_diff)>2) || (abs(lon_diff)>4)) // movement detection
     {
       lat_old = lat_short;
@@ -988,7 +909,84 @@ void loop()
     }
   }
 
-  
+  {    
+    // make a string for assembling the NMEA to log:
+    String dataString = "";
+
+    char incomingByte;
+    bool flag = false;
+    uint8_t messages = 0;
+    uint32_t nomessages = 0;
+    while(true)
+    {
+      if (Serial1.available()) 
+      {
+        // read the incoming byte:
+        incomingByte = Serial1.read();
+        nomessages = 0;
+        
+        if (incomingByte == '$') {flag = true; messages++;};
+        if (messages > MSG_NO)
+        {
+          readRTC();
+                
+          dataString += "$TIME,";
+          dataString += String(tm); 
+          dataString += ".";
+          dataString += String(tm_s100); 
+          
+          break;
+        }
+        
+        // say what you got:
+        if (flag && (messages<=MSG_NO)) dataString+=incomingByte;
+      }
+      else
+      {
+        nomessages++;  
+        if (nomessages > GPSerror) break; // preventing of forever waiting
+      }
+    }  
+    set_power(GPS_OFF);
+
+    {
+        set_power(SD_ON);
+        
+        // make sure that the default chip select pin is set to output
+        // see if the card is present and can be initialized:
+        if (!SD.begin(SS)) 
+        {
+          Serial.println("#Card failed, or not present");
+          // don't do anything more:
+          return;
+        }
+        
+        // open the file. note that only one file can be open at a time,
+        // so you have to close this one before opening another.
+        File dataFile = SD.open("datalog.txt", FILE_WRITE);
+        
+        // if the file is available, write to it:
+        if (dataFile) 
+        {
+          digitalWrite(LED_red, HIGH);  // Blink for Dasa
+          dataFile.println(dataString);  // write to SDcard (800 ms)     
+          digitalWrite(LED_red, LOW);          
+          dataFile.close();
+        }  
+        // if the file isn't open, pop up an error:
+        else 
+        {
+          Serial.println("#error opening datalog.txt");
+        }
+        
+        set_power(SD_OFF);
+    }  
+#ifdef DEBUG
+    Serial.println(dataString);  // print to terminal (additional 700 ms)
+    //!!!wdt_reset(); //Reset WDT
+#endif
+  }
+ 
   for(uint16_t i=0; i<(GPSdelay); i++)  // measurements between GPS aquisition
   {
     PORTB = 1;                          // Set reset output for peak detector to H
@@ -1106,7 +1104,6 @@ void loop()
        
       count++;
 
-Serial.println("#11");
       {        
 
         set_power(SD_ON);
