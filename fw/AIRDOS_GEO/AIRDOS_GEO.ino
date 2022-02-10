@@ -2,6 +2,7 @@
 String FWversion = "GEO_1024_v1"; // Output data format
 
 #define RANGE 25   // histogram range
+#define NOISE  6    // first channel for reporting flux to IoT
 #define EVENTS 500 // maximal number of recorded events
 #define GPSerror 700000 // number of cycles for waitig for GPS in case of GPS error 
 #define MSG_NO 20 // number of recorded NMEA messages
@@ -124,11 +125,11 @@ uint16_t hits;
 uint16_t lat_old;
 uint16_t lon_old;
 
-// 1290c00806a200908013a000a00000dd
-String crystal = "NaI(Tl)-D18x30";
-static const PROGMEM u1_t NWKSKEY[16] = {0xA0,0x32,0xE7,0xEC,0x37,0x14,0x83,0x38,0xD5,0xBC,0x33,0x63,0xDE,0x07,0xE8,0x07};
-static const u1_t PROGMEM APPSKEY[16] = {0x05,0x23,0x95,0x5B,0x55,0x60,0x26,0x13,0xB7,0xC6,0xAB,0xCD,0x3E,0xE9,0xF4,0xBC};
-static const u4_t DEVADDR = 0x260B08E8; 
+// 1290c00806a20090c013a000a0000086
+String crystal = "D16x30";
+static const PROGMEM u1_t NWKSKEY[16] = {0xD8,0xF7,0x35,0x50,0x0C,0x85,0x10,0xEA,0x5E,0xFA,0xCD,0xEF,0x89,0xBC,0x11,0xAC};
+static const u1_t PROGMEM APPSKEY[16] = {0x93,0x67,0xC1,0x39,0xA6,0x1E,0xF3,0x9D,0xDB,0x3A,0xB2,0xA7,0xFA,0x5C,0x52,0x48};
+static const u4_t DEVADDR = 0x260BB492; 
 
 /*
 // 1290c00806a200908013a000a00000dd
@@ -1027,6 +1028,8 @@ void loop()
   
       // combine the two bytes
       u_sensor = (hi << 8) | lo;          // 1024
+      
+      if (u_sensor > NOISE) hits++;
       
       if (u_sensor <  RANGE)
       {
