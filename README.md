@@ -30,12 +30,12 @@ GEODOS devices are installed on multiple locations in Šumava. The one example i
 * Data memory: SD card
 * Record’s content: energy and time of each event
 * Record’s periodicity: 10 s (maximal dead time 2 s)
-* Time resolution: 20 us
+* Time resolution: 100 us
 * Accuracy of event’s time: 500 ns
-* Energy range: 0.3 to 1 MeV (0,2 MeV resolution)
+* Energy range: 0.2 to 13 MeV (65 keV resolution)
 * Open-source HW and SW
 * Device status indicator type LED
-* Uniterrupted measurement interval 365 days minimum
+* Uninterrupted measurement interval 365 days minimum
 * LoRa connection to IoT network
 * Weather resistivity IP 65
 
