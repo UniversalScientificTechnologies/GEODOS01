@@ -25,3 +25,6 @@
 [submodule "doc/STEPUPDC02"]
 	path = doc/STEPUPDC02
 	url = git@github.com:mlab-modules/STEPUPDC02.git
+[submodule "doc/SIPM02"]
+	path = doc/SIPM02
+	url = git@github.com:mlab-modules/SIPM02.git
