@@ -31,6 +31,8 @@ GEODOS devices are installed on multiple locations in Šumava. The one example i
 * Record’s content: energy and time of each event
 * Record’s periodicity: 10 s (maximal dead time 2 s)
 * Time resolution: 20 us
+* ADC Conversion time 104 us 
+* [Dead time](https://en.wikipedia.org/wiki/Dead_time) 2 us
 * Accuracy of event’s time: 500 ns
 * Energy range: 0.3 to 1 MeV (0,2 MeV resolution)
 * Open-source HW and SW
@@ -60,7 +62,7 @@ For remote areas, mounting a IoT gateway in radio range of GEODOS instruments co
 ### Detailed documentation of used electronic modules
 
 * [STEPUPDC02A](https://github.com/mlab-modules/STEPUPDC02)
-* [AIRDOSC01A_PCB01C](https://github.com/UniversalScientificTechnologies/AIRDOSC01/tree/AIRDOSC01A/hw/sch_pcb/AIRDOSC01A_PCB01C)
+* [SIPM02C](https://github.com/mlab-modules/SIPM02) known as "AIRDOSC01A_PCB01C"
 * [PCRD06A](https://github.com/mlab-modules/PCRD06)
 * [GPS01B](https://www.mlab.cz/module/GPS01B)
 * [DATALOGGER01A](http://mlab.cz/module/DATALOGGER01A)
@@ -68,4 +70,4 @@ For remote areas, mounting a IoT gateway in radio range of GEODOS instruments co
 * [ISM02B](https://github.com/mlab-modules/ISM02)
 * [TPS63060V01A](https://github.com/mlab-modules/TPS63060V01)
 * [LION1CELL01B](https://github.com/mlab-modules/LION1CELL01)
-* [SOLARMINI01A](https://github.com/mlab-modules/SOLARMINI01)
+* [SOLARMINI01B](https://github.com/mlab-modules/SOLARMINI01)
