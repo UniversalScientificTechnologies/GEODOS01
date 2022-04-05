@@ -330,9 +330,11 @@ void loop()
   //WriteFlashByte(83,1,0x59);   //
 
   WriteFlashByte(64,5,0x10);    // Battery Low voltage ALERT
-  WriteFlashByte(64,6,0x00);
-  WriteFlashByte(49,8,0x0a);    // Battery set low voltage threshold 2750 mV = 0x0abe (default 0 mV = 0x0000)
-  WriteFlashByte(49,9,0xbe);
+  WriteFlashByte(64,6,0x00);   
+  //WriteFlashByte(49,8,0x0a);    // Battery set low voltage threshold 2750 mV = 0x0abe (default 0 mV = 0x0000)
+  //WriteFlashByte(49,9,0xbe);   
+  WriteFlashByte(49,8,0x0c);    // Battery set low voltage threshold 3300 mV = 0x0ce4 (default 0 mV = 0x0000)
+  WriteFlashByte(49,9,0xe4);   
   WriteFlashByte(49,11,0x0e);   // Battery clear low voltage threshold 3635 mV = 0x0e33 (default 5 mV = 0x0005)
   WriteFlashByte(49,12,0x33);
   WriteFlashByte(49,10,0x32);   // Battery set low voltage time hreshold 50 s = 0x32 (default 0 s = 0x00, max. 60 s)
