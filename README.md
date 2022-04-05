@@ -37,8 +37,10 @@ GEODOS devices are installed on multiple locations in Šumava. The one example i
 * Energy range: 0.3 to 1 MeV (0,2 MeV resolution) The range could be increased up to 40 MeV by component values selection. 
 * Open-source HW and SW
 * Device status indicator type LED
-* Uniterrupted measurement interval 365 days minimum
+* Uniterrupted measurement campaign interval is limited by SDcard capacity, if sufficient power is available over the campaign period. 
 * LoRa connection to IoT network
+* Operational temperature range -20°C to +35°C
+* Charging temperature range 0°C to +45°C (outside of this range the internal backup Li-ion cell is not recharged.)
 * Weather resistivity IP 65
 
 
