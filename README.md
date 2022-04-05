@@ -28,7 +28,7 @@ GEODOS devices are installed on multiple locations in Šumava. The one example i
 * Power source: solar panel
 * Backup power source: rechargable 18650 Li-ion cell
 * Data memory: SD card
-* Record’s content: energy and time of each event
+* Record’s content: energy and time of each event above the specified energy (1MeV by default)
 * Record’s periodicity: 10 s (maximal dead time 2 s)
 * Time resolution: 20 us
 * ADC Conversion time 104 us 
