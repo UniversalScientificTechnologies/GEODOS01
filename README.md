@@ -28,11 +28,13 @@ GEODOS devices are installed on multiple locations in Šumava. The one example i
 * Power source: solar panel
 * Backup power source: rechargable 18650 Li-ion cell
 * Data memory: SD card
-* Record’s content: energy and time of each event
+* Record’s content: energy and time of each event above the specified energy (1MeV by default)
 * Record’s periodicity: 10 s (maximal dead time 2 s)
 * Time resolution: 20 us
+* ADC Conversion time 104 us 
+* [Dead time](https://en.wikipedia.org/wiki/Dead_time) 2 us
 * Accuracy of event’s time: 500 ns
-* Energy range: 0.3 to 1 MeV (0,2 MeV resolution)
+* Energy range: 0.3 to 1 MeV (0,2 MeV resolution) The range could be increased up to 40 MeV by component values selection. 
 * Open-source HW and SW
 * Device status indicator type LED
 * Uniterrupted measurement interval 365 days minimum
@@ -60,7 +62,7 @@ For remote areas, mounting a IoT gateway in radio range of GEODOS instruments co
 ### Detailed documentation of used electronic modules
 
 * [STEPUPDC02A](https://github.com/mlab-modules/STEPUPDC02)
-* [AIRDOSC01A_PCB01C](https://github.com/UniversalScientificTechnologies/AIRDOSC01/tree/AIRDOSC01A/hw/sch_pcb/AIRDOSC01A_PCB01C)
+* [SIPM02C](https://github.com/mlab-modules/SIPM02) known as "AIRDOSC01A_PCB01C"
 * [PCRD06A](https://github.com/mlab-modules/PCRD06)
 * [GPS01B](https://www.mlab.cz/module/GPS01B)
 * [DATALOGGER01A](http://mlab.cz/module/DATALOGGER01A)
@@ -68,4 +70,4 @@ For remote areas, mounting a IoT gateway in radio range of GEODOS instruments co
 * [ISM02B](https://github.com/mlab-modules/ISM02)
 * [TPS63060V01A](https://github.com/mlab-modules/TPS63060V01)
 * [LION1CELL01B](https://github.com/mlab-modules/LION1CELL01)
-* [SOLARMINI01A](https://github.com/mlab-modules/SOLARMINI01)
+* [SOLARMINI01B](https://github.com/mlab-modules/SOLARMINI01)
