@@ -125,11 +125,11 @@ uint16_t hits;
 uint16_t lat_old;
 uint16_t lon_old;
 
-// 1290c00806a20090c013a000a0000086
-String crystal = "D16x30";
-static const PROGMEM u1_t NWKSKEY[16] = {0xD8,0xF7,0x35,0x50,0x0C,0x85,0x10,0xEA,0x5E,0xFA,0xCD,0xEF,0x89,0xBC,0x11,0xAC};
-static const u1_t PROGMEM APPSKEY[16] = {0x93,0x67,0xC1,0x39,0xA6,0x1E,0xF3,0x9D,0xDB,0x3A,0xB2,0xA7,0xFA,0x5C,0x52,0x48};
-static const u4_t DEVADDR = 0x260BB492; 
+// 1290c00806a20091e412a000a0000010
+String crystal = "NaI(Tl)-D16x30";
+static const PROGMEM u1_t NWKSKEY[16] = {0xF2,0x28,0xA1,0xB1,0xF4,0xD9,0xB9,0x89,0xAD,0x30,0x91,0x2B,0xC1,0x87,0x45,0x49};
+static const u1_t PROGMEM APPSKEY[16] = {0x9C,0x55,0xE5,0x6C,0x0E,0xBE,0xCD,0x3A,0x29,0xE3,0x79,0x85,0x2C,0xDC,0x33,0x40};
+static const u4_t DEVADDR = 0x260B1BEA; 
 
 /*
 // 1290c00806a200908013a000a00000dd
@@ -695,6 +695,44 @@ void setup()
       // don't do anything more:
       return;
     }
+
+    // files structure exists?
+    File dataFile = SD.open("0.txt", FILE_READ);
+    if (dataFile) 
+    {
+      digitalWrite(LED_red, HIGH);  // Blink
+      delay(20);
+      digitalWrite(LED_red, LOW);          
+      delay(20);
+    }  
+    // if the file isn't open, pop up an error:
+    else 
+    {
+      dataFile.close();
+      for (uint8_t n=0; n++; n<254)
+      {
+        String filename = String(n) + ".txt";
+        File dataFile = SD.open(filename, FILE_WRITE);
+        dataFile.close();
+        digitalWrite(LED_red, HIGH);  // Blink
+        delay(20);
+        digitalWrite(LED_red, LOW);          
+        delay(20);
+      }
+    }
+
+    // find empty file
+    for (uint8_t n=0; n++; n<254)
+    {
+      String filename = String(n) + ".txt";
+      File dataFile = SD.open(filename, FILE_WRITE);
+      dataFile.close();
+      digitalWrite(LED_red, HIGH);  // Blink
+      delay(20);
+      digitalWrite(LED_red, LOW);          
+      delay(20);
+    }
+    
   
     // open the file. note that only one file can be open at a time,
     // so you have to close this one before opening another.
@@ -716,8 +754,6 @@ void setup()
     }
     
     set_power(SD_OFF);
-    //!!!DDRB = 0b10011110;
-    //!!!PORTB = 0b00000001;  // SDcard Power OFF  
   }    
   
   hits = 0;
