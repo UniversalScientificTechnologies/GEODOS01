@@ -113,11 +113,11 @@ TX1/INT1 (D 11) PD3 17|        |24 PC2 (D 18) TCK
 #define MISO      6    // PB6
 #define SCK       7    // PB7
 #define INT       20   // PC4
-#define IOT_RESET 21   // PC5
+#define RESETITKO_ON  21   // PC5
 #define IOT_BUSY  18   // PC2
 #define IOT_DIO1  19   // PC3
 #define IOT_CS    20   // PC4
-#define RESETITKO 22   // PC6
+#define RESETITKO_OFF 22   // PC6
 
 
 uint16_t count = 0;
@@ -251,9 +251,12 @@ void setup()
   pinMode(MISO, OUTPUT);     
   pinMode(SCK, OUTPUT);  
   pinMode(RESET, OUTPUT);   // reset signal for peak detetor
-
-  digitalWrite(RESETITKO, LOW);   
-  pinMode(RESETITKO, OUTPUT);   // resetitko pro Marka
+  pinMode(RESETITKO_ON, OUTPUT);   // resetitko pro Marka
+  pinMode(RESETITKO_OFF, OUTPUT);   // resetitko pro Marka
+  digitalWrite(RESETITKO_ON, LOW);  
+  digitalWrite(RESETITKO_OFF, HIGH);
+  delay(100);  
+  digitalWrite(RESETITKO_OFF, LOW);
 
   set_power(SD_OFF);
   set_power(GPS_OFF);
@@ -360,7 +363,9 @@ void setup()
   }
 
   delay(10000);
-  pinMode(RESETITKO, INPUT);   // resetitko pro Marka
+  digitalWrite(RESETITKO_ON, HIGH);    // resetitko pro Marka  
+  delay(100);  
+  digitalWrite(RESETITKO_ON, LOW);
   
   
   Serial.println("#Hmmm...");
