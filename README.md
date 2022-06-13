@@ -4,6 +4,8 @@
 
 ![GEODOS01A Installed on Polednik site](/doc/src/img/GEODOS_Polednik_site.jpg)
 
+If you need a fully automatic inising radiation dosimeter-spectrometer device (with internal logging and backup power supply) or device designed for outdoor use without the possibility of connecting to power and data network you can look at [GEODOS01](https://github.com/UniversalScientificTechnologies/GEODOS01) or contact us by email [support@ust.cz](mailto:support@ust.cz). We can agree on the development of equipment according to your requirements.
+
 ### Locations
 
 GEODOS devices are mounted on multiple significant places around Europe at this moment.
