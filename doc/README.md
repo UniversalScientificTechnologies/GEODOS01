@@ -38,6 +38,13 @@ Na SDkartě je pak za normílních okolností pouze jeden soubor DATALOG.TXT, kt
 
 ## Service information
 
+### Debug output
+
+GEODOS has debug output at RX0, TX0 baudrate is 38400.
+
+  $HIST,63,861.90,97386.50,25.81,3.82,16,473,883,2,12704,21600,80,16,11,0,3,5,1,1,3,0,1,2,1,1,1,0,0,1,0,0,0,2
+  $HITS,29,4879,35,5201,30,17202,36,18704,30,21061,102,27156,61,27574,79,27797,26,32746,40,40409,58,48144,36,49356,54,51772,37,52090,69,56941,61,62446,36,63116,132,65634,104,67413,35,68563,32,70039,30,70211,56,83196,28,83445,63,87672,32,88476,29,92791,26,99154,84,99543,29
+
 ### Firmware upgrade
 
 For the firmware upgrade, the USB-RS232 converter is needed.  Normally is used the [USB232R02](https://github.com/mlab-modules/USB232R02), but any [USBcable](https://techfun.sk/produkt/kabel-pl2303hx-usb-na-ttl-rs232/) could be used.
