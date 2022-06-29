@@ -60,7 +60,7 @@ The core of the detector is a scintillation crystal with [SiPM detector](https:/
 
 ### Data storage
 
-The primary raw data are stored in SDcard's memory. The IoT network is used for telemetry data transfer, device monitoring (e.g. temperature, humidity, pressure, battery voltage etc.). We are normally using the [TTN](https://www.thethingsnetwork.org/), but the device could be configured for use with any IoT LoRa based network.
+The primary raw data is stored in SDcard's memory. The IoT network is used for telemetry data transfer, device monitoring (e.g. temperature, humidity, pressure, battery voltage etc.). We are normally using the [TTN](https://www.thethingsnetwork.org/), but the device could be configured for use with any IoT LoRa based network.
 For remote areas, mounting a IoT gateway in radio range of GEODOS instruments could also be a good option.
 
 ### Detailed documentation of the used electronic modules
