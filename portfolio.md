@@ -1,7 +1,7 @@
 ---
 title: "GEODOS01B"
 name: "AAA"
-excerpt: "Open-source scintillation detector of ionizing radiation. The device can be further modified according to specific requirements. Character of its construction makes it especially suitable for placement into mountaints to in-field measurement"
+excerpt: "Open-source scintillation detector of ionizing radiation. The device can be further modified according to specific requirements. Character of its construction makes it especially suitable for placement into mountaints for in-field measurements"
 header:
   image: products/GEODOS01B/doc/src/img/GEODOS_Chernobyl_redforest_site.jpg
   teaser: products/GEODOS01B/doc/src/img/GEODOS_Chernobyl_redforest_site.jpg
@@ -16,7 +16,7 @@ header:
 
 ### Locations
 
-GEODOS devices are mounted on multiple significant places around Europe at this moment.
+GEODOS devices are mounted on multiple significant locations around Europe at this moment.
 
 #### Chernobyl Red Forest
 
@@ -28,26 +28,26 @@ One GEODOS device is installed in [Chernobyl Red Forest site](https://en.wikiped
 
 #### Šumava mountains
 
-GEODOS devices are installed on multiple locations in Šumava. The one example is [Polednik watch tower](https://cs.wikipedia.org/wiki/Poledn%C3%ADk_(%C5%A0umava)).
+GEODOS devices are installed on multiple locations in Šumava. For example at [Polednik watch tower](https://cs.wikipedia.org/wiki/Poledn%C3%ADk_(%C5%A0umava)).
 
 ![GEODOS01A Installed on Polednik site](doc/src/img/GEODOS_Polednik_site.jpg)
 
 ### Technical parameters
 
-* Detection element: scintillation crystal NaI(Tl) 10 mm diameter 20 mm length integrated with SiPM detector
+* Detection element: scintillation crystal NaI(Tl), 10 mm in diameter, 20 mm in length; integrated with SiPM detector
 * Power source: solar panel
 * Backup power source: rechargable 18650 Li-ion cell
 * Data memory: SD card
 * Record’s content: energy and time of each event
 * Record’s periodicity: 10 s (maximal dead time 2 s)
 * Time resolution: 20 us
-* ADC Conversion time 104 us 
-* [Dead time](https://en.wikipedia.org/wiki/Dead_time) 2 us
+* ADC Conversion time: 104 us 
+* [Dead time](https://en.wikipedia.org/wiki/Dead_time): 2 us
 * Accuracy of event’s time: 500 ns
 * Energy range: 0.3 to 1 MeV (0,2 MeV resolution)
 * Open-source HW and SW
-* Device status indicator type LED
-* Uniterrupted measurement interval 365 days minimum
+* Device status indicator type: LED
+* Uniterrupted measurement interval: 365 days minimum
 * LoRa connection to IoT network
 * Weather resistivity IP 65
 
@@ -58,7 +58,7 @@ GEODOS devices are installed on multiple locations in Šumava. The one example i
 
 ### Sensor element
 
-The core of the detector  - scintillation crystal with [SiPM detector](https://en.wikipedia.org/wiki/Silicon_photomultiplier).
+The core of the detector is a scintillation crystal with [SiPM detector](https://en.wikipedia.org/wiki/Silicon_photomultiplier).
 
 ![Scintillation detector in box](doc/src/img/GEODOS01A_sensor.jpg)
 
@@ -66,7 +66,7 @@ The core of the detector  - scintillation crystal with [SiPM detector](https://e
 
 ### Data storage
 
-The primary raw data are stored in SDcard memory. The IoT network is used to telemetry data transfer, for device monitoring (e.g. Temperature, Humidity, Pressure, Battery voltage etc.).  We using normally the [TTN](https://www.thethingsnetwork.org/), but the device could be configured for use any IoT LoRa based network.
+The primary raw data is stored in SDcard memory. The IoT network is used for telemetry data transfer, device monitoring (e.g. temperature, humidity, pressure, battery voltage etc.).  We are normally using the [TTN](https://www.thethingsnetwork.org/), but the device could be configured for use with any IoT LoRa based network.
 For remote areas, mounting a IoT gateway in radio range of GEODOS instruments could be also a good option.
 
 ### Detailed documentation of used electronic modules
