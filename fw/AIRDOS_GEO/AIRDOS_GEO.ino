@@ -1,19 +1,23 @@
 #define DEBUG // Please comment it if you are not debugging
-String FWversion = "GEO_1024_v1"; // Output data format
+String FWversion = "GEO_1024_v3"; // Output data format (multiple files)
 
 #define RANGE 25   // histogram range
-#define NOISE  6    // first channel for reporting flux to IoT
+#define NOISE  10  // first channel for reporting flux to IoT
 #define EVENTS 500 // maximal number of recorded events
 #define GPSerror 700000 // number of cycles for waitig for GPS in case of GPS error 
 #define MSG_NO 20 // number of recorded NMEA messages
 //#define GPSdelay  3   // number of measurements between obtaining GPS position
 #define GPSdelay 346   // number of measurements between obtaining GPS position and sending telemetry
                        // 346 = cca 1 h
+#define MAXFILESIZE 28000000 // in bytes, 4 MB per day, 28 MB per week, 122 MB per month
+#define MAXCOUNT 53000 // in measurement cycles, 7 479 per day, 52353 per week, 224 369 per month
+#define MAXFILES 100 // maximal number of files on SD card
+
 
 // Compiled with: Arduino 1.8.13
 
 /*
-  AORDOS_C for GeoDos
+  AIRDOS_C for GeoDos
 
 ISP
 ---
@@ -115,6 +119,8 @@ TX1/INT1 (D 11) PD3 17|        |24 PC2 (D 18) TCK
 #define IOT_DIO1  19   // PC3
 #define IOT_CS    20   // PC4
 
+String filename = "";
+uint16_t fn;
 uint16_t count = 0;
 uint32_t serialhash = 0;
 uint8_t lo, hi;
@@ -125,11 +131,11 @@ uint16_t hits;
 uint16_t lat_old;
 uint16_t lon_old;
 
-// 1290c00806a20091e412a000a0000010
-String crystal = "NaI(Tl)-D16x30";
-static const PROGMEM u1_t NWKSKEY[16] = {0xF2,0x28,0xA1,0xB1,0xF4,0xD9,0xB9,0x89,0xAD,0x30,0x91,0x2B,0xC1,0x87,0x45,0x49};
-static const u1_t PROGMEM APPSKEY[16] = {0x9C,0x55,0xE5,0x6C,0x0E,0xBE,0xCD,0x3A,0x29,0xE3,0x79,0x85,0x2C,0xDC,0x33,0x40};
-static const u4_t DEVADDR = 0x260B1BEA; 
+// 1290c00806a20090b413a000a0000070
+String crystal = "NaI(Tl)-D18x30";
+static const PROGMEM u1_t NWKSKEY[16] = {0xA5,0x4F,0x8E,0xA4,0x48,0x4E,0xD3,0xAC,0x65,0xCD,0x7D,0x47,0xE5,0xFC,0x1B,0x0D};
+static const u1_t PROGMEM APPSKEY[16] = {0x3C,0x1E,0x87,0xA7,0xB1,0x17,0xB0,0x2E,0x06,0xE7,0xF6,0x9F,0x48,0x5E,0x1E,0x02};
+static const u4_t DEVADDR = 0x260B0655; 
 
 /*
 // 1290c00806a200908013a000a00000dd
@@ -177,11 +183,9 @@ static const u1_t PROGMEM APPSKEY[16] = {0x4C,0xB7,0x66,0x21,0xB6,0xAA,0xF1,0xF7
 static const u4_t DEVADDR = 0x260BE73E;
 
 // 1290c00806a200923813a000a00000ec
-// Network Session Key
+String crystal = "D16x30";
 static const PROGMEM u1_t NWKSKEY[16] = {0x4C,0x4D,0x0E,0x77,0x7B,0x3F,0xAD,0xAC,0x93,0xF2,0x62,0x33,0xE5,0x81,0x6C,0x1B};
-// App Session Key
 static const u1_t PROGMEM APPSKEY[16] = {0x27,0x2C,0x7A,0x13,0xA9,0xC4,0xB6,0x9D,0x9B,0xAE,0x33,0x5F,0xFA,0xA6,0x8B,0x58};
-// Device Address
 static const u4_t DEVADDR = 0x260BD7C1;
 
 // 1290c00806a20091c057a000a0000036
@@ -275,6 +279,7 @@ uint8_t bcdToDec(uint8_t b)
   return ( ((b >> 4)*10) + (b%16) );
 }
 
+void(* resetFunc) (void) = 0;//declare reset function at address 0
 
 uint32_t tm;
 uint8_t tm_s100;
@@ -513,7 +518,7 @@ void setup()
   Wire.setClock(100000);
 
   // Open serial communications
-  Serial.begin(38400);
+  Serial.begin(115200);
 
   Serial.println("#Cvak...");
  
@@ -593,8 +598,6 @@ void setup()
   {
     dataString += "NaN";    
   }
-
-  Serial.println("#Hmmm...");
 
   {
     set_power(LORA_ON);
@@ -695,54 +698,33 @@ void setup()
       // don't do anything more:
       return;
     }
-
-    // files structure exists?
-    File dataFile = SD.open("0.txt", FILE_READ);
-    if (dataFile) 
-    {
-      digitalWrite(LED_red, HIGH);  // Blink
-      delay(20);
-      digitalWrite(LED_red, LOW);          
-      delay(20);
-    }  
-    // if the file isn't open, pop up an error:
-    else 
-    {
-      dataFile.close();
-      for (uint8_t n=0; n++; n<254)
-      {
-        String filename = String(n) + ".txt";
-        File dataFile = SD.open(filename, FILE_WRITE);
-        dataFile.close();
-        digitalWrite(LED_red, HIGH);  // Blink
-        delay(20);
-        digitalWrite(LED_red, LOW);          
-        delay(20);
-      }
-    }
-
-    // find empty file
-    for (uint8_t n=0; n++; n<254)
-    {
-      String filename = String(n) + ".txt";
-      File dataFile = SD.open(filename, FILE_WRITE);
-      dataFile.close();
-      digitalWrite(LED_red, HIGH);  // Blink
-      delay(20);
-      digitalWrite(LED_red, LOW);          
-      delay(20);
-    }
-    
   
+    for (fn = 1; fn<MAXFILES; fn++) // find last file
+    {
+       filename = String(fn) + ".txt";
+       if (SD.exists(filename) == 0) break;
+    }
+    fn--;
+    filename = String(fn) + ".txt";
+    
     // open the file. note that only one file can be open at a time,
     // so you have to close this one before opening another.
-    File dataFile = SD.open("datalog.txt", FILE_WRITE);
+    File dataFile = SD.open(filename, FILE_WRITE);
+
+    if (dataFile.size() > MAXFILESIZE)
+    {
+      dataFile.close();
+      fn++;
+      filename = String(fn) + ".txt";      
+      dataFile = SD.open(filename, FILE_WRITE);
+    }
   
     // if the file is available, write to it:
     if (dataFile) 
     {
       dataFile.println(dataString);  // write to SDcard (800 ms)     
       dataFile.close();
+  
       digitalWrite(LED_red, HIGH);  // Blink for Dasa
       Serial.println(dataString);  // print SN to terminal 
       digitalWrite(LED_red, LOW);          
@@ -756,6 +738,8 @@ void setup()
     set_power(SD_OFF);
   }    
   
+  Serial.println("#Hmmm...");
+
   hits = 0;
   lat_old = 0;
   lon_old = 0;
@@ -766,7 +750,7 @@ void loop()
 {
   uint16_t buffer[RANGE];       // buffer for histogram
   uint32_t hit_time[EVENTS];    // time of events
-  uint8_t hit_channel[EVENTS];  // energy of events
+  uint16_t hit_channel[EVENTS];  // energy of events
 
   //!!!wdt_reset(); //Reset WDT
 
@@ -838,7 +822,6 @@ void loop()
     dataString += String(readBat(6));   // mAh - full charge
     dataString += ",";
     dataString += String(hits);   // number of hits per measurement cycle
-    hits = 0;
 
     // send_packet over LoRa IoT
     set_power(LORA_ON);
@@ -859,6 +842,7 @@ void loop()
 
     set_power(LORA_OFF);
   }
+  hits = 0;
 
 
   // GPS **********************
@@ -1000,7 +984,7 @@ void loop()
         
         // open the file. note that only one file can be open at a time,
         // so you have to close this one before opening another.
-        File dataFile = SD.open("datalog.txt", FILE_WRITE);
+        File dataFile = SD.open(filename, FILE_WRITE);
         
         // if the file is available, write to it:
         if (dataFile) 
@@ -1019,7 +1003,7 @@ void loop()
         set_power(SD_OFF);
     }  
 #ifdef DEBUG
-    Serial.println(dataString);  // print to terminal (additional 700 ms)
+    Serial.println(dataString);  // print to terminal 
     //!!!wdt_reset(); //Reset WDT
 #endif
   }
@@ -1128,10 +1112,13 @@ void loop()
       dataString += String(float(readBat(8))/1000);   // V - U
       dataString += ",";
       dataString += String(readBat(10));  // mA - I
+//      dataString += ",";
+//      dataString += String(readBat(4));   // mAh - remaining capacity
+//      dataString += ",";
+//      dataString += String(readBat(6));   // mAh - full charge
+//!!!
       dataString += ",";
-      dataString += String(readBat(4));   // mAh - remaining capacity
-      dataString += ",";
-      dataString += String(readBat(6));   // mAh - full charge
+      dataString += String(hits);   
             
       for(int n=0; n<RANGE; n++)  
       {
@@ -1146,8 +1133,6 @@ void loop()
       {        
 
         set_power(SD_ON);
-        //!!!DDRB = 0b10111110;
-        //!!!PORTB = 0b00001111;  // SDcard Power ON
 
         // make sure that the default chip select pin is set to output
         // see if the card is present and can be initialized:
@@ -1160,7 +1145,7 @@ void loop()
 
         // open the file. note that only one file can be open at a time,
         // so you have to close this one before opening another.
-        File dataFile = SD.open("datalog.txt", FILE_WRITE);
+        File dataFile = SD.open(filename, FILE_WRITE);
       
         // if the file is available, write to it:
         if (dataFile) 
@@ -1179,7 +1164,7 @@ void loop()
         set_power(SD_OFF);
       }          
       digitalWrite(LED_red, HIGH);  // Blink for Dasa
-      Serial.println(dataString);   // print to terminal (additional 700 ms in DEBUG mode)
+      Serial.println(dataString);   // print to terminal
       digitalWrite(LED_red, LOW);                
     }    
 
@@ -1214,7 +1199,7 @@ void loop()
 
         // open the file. note that only one file can be open at a time,
         // so you have to close this one before opening another.
-        File dataFile = SD.open("datalog.txt", FILE_WRITE);
+        File dataFile = SD.open(filename, FILE_WRITE);
       
         // if the file is available, write to it:
         if (dataFile) 
@@ -1233,8 +1218,11 @@ void loop()
         set_power(SD_OFF);
       }          
       digitalWrite(LED_red, HIGH);  // Blink for Dasa
-      Serial.println(dataString);   // print to terminal (additional 700 ms in DEBUG mode)
+      Serial.println(dataString);   // print to terminal 
       digitalWrite(LED_red, LOW);                
+
+      if (count > MAXCOUNT) resetFunc(); //call reset 
+
     } 
   }
 }
