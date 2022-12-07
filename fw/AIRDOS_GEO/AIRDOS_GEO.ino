@@ -23,7 +23,7 @@ ISP
 ---
 PD0     RX
 PD1     TX
-RESET#  through 50M capacitor to RST#
+RESET#  through 50M capacitor to DTR#
 
 SDcard
 ------
@@ -131,11 +131,11 @@ uint16_t hits;
 uint16_t lat_old;
 uint16_t lon_old;
 
-// 1290c00806a200923813a000a00000ec
+// 1290c00806a20090c013a000a0000086
 String crystal = "D16x30";
-static const PROGMEM u1_t NWKSKEY[16] = {0x4C,0x4D,0x0E,0x77,0x7B,0x3F,0xAD,0xAC,0x93,0xF2,0x62,0x33,0xE5,0x81,0x6C,0x1B};
-static const u1_t PROGMEM APPSKEY[16] = {0x27,0x2C,0x7A,0x13,0xA9,0xC4,0xB6,0x9D,0x9B,0xAE,0x33,0x5F,0xFA,0xA6,0x8B,0x58};
-static const u4_t DEVADDR = 0x260BD7C1;
+static const PROGMEM u1_t NWKSKEY[16] = {0xD8,0xF7,0x35,0x50,0x0C,0x85,0x10,0xEA,0x5E,0xFA,0xCD,0xEF,0x89,0xBC,0x11,0xAC};
+static const u1_t PROGMEM APPSKEY[16] = {0x93,0x67,0xC1,0x39,0xA6,0x1E,0xF3,0x9D,0xDB,0x3A,0xB2,0xA7,0xFA,0x5C,0x52,0x48};
+static const u4_t DEVADDR = 0x260BB492; 
 
 /*
 // 1290c00806a200908013a000a00000dd
@@ -746,6 +746,8 @@ void setup()
   //!!! wdt_reset(); //Reset WDT
 }
 
+uint8_t TelemetryCounts = 0;
+
 void loop()
 {
   uint16_t buffer[RANGE];       // buffer for histogram
@@ -754,157 +756,85 @@ void loop()
 
   //!!!wdt_reset(); //Reset WDT
 
+  if (TelemetryCounts++ < 24)
   {
-    // make a string for assembling the data to log:
-    String dataString = "";
-    int8_t temp = -63;
-    
-    if (digitalRead(17)) // Protection against sensor mallfunction 
     {
-  
-      readRTC();
-      
       // make a string for assembling the data to log:
-      dataString += "$HEALTH,";
-  
-      dataString += String(count); 
-      dataString += ",";
-    
-      dataString += String(tm); 
-      dataString += ".";
-      dataString += String(tm_s100); 
-      dataString += ",";
-
-      if (! sensor.begin()) 
+      String dataString = "";
+      int8_t temp = -63;
+      
+      if (digitalRead(17)) // Protection against sensor mallfunction 
       {
-        dataString += "NaN,NaN";
+    
+        readRTC();
+        
+        // make a string for assembling the data to log:
+        dataString += "$HEALTH,";
+    
+        dataString += String(count); 
+        dataString += ",";
+      
+        dataString += String(tm); 
+        dataString += ".";
+        dataString += String(tm_s100); 
+        dataString += ",";
+  
+        if (! sensor.begin()) 
+        {
+          dataString += "NaN,NaN";
+        }
+        else
+        {
+          float pressure = sensor.getPressure();
+          dataString += String(pressure); 
+          dataString += ",";
+      
+          float temperature = sensor.getTemperature();
+          dataString += String(temperature); 
+          temp = round(temperature);
+        }  
       }
       else
       {
-        float pressure = sensor.getPressure();
-        dataString += String(pressure); 
-        dataString += ",";
-    
-        float temperature = sensor.getTemperature();
-        dataString += String(temperature); 
-        temp = round(temperature);
-      }  
-    }
-    else
-    {
-      dataString += "$Error";
-    }
-
-    int16_t voltage = readBat(8);
-    iot_message[0] = round(voltage / 10) - 175;
-    int16_t current = readBat(10);
-    iot_message[1] = current;
-    iot_message[2] = (current >> 8) & 0x01;
-    iot_message[2] |= temp << 1;
-    iot_message[3] = hits & 0xff;
-    iot_message[4] = hits >> 8 ;
-
-    /* DEBUG
-    Serial.println();
-    for(int i=0; i<5; i++)
-    {
-      Serial.println(iot_message[i],HEX);
-    }
-    */
-    
-    dataString += ",";
-    dataString += String(float(voltage)/1000);   // V - U
-    dataString += ",";
-    dataString += String(current);  // mA - I
-    dataString += ",";
-    dataString += String(readBat(4));   // mAh - remaining capacity
-    dataString += ",";
-    dataString += String(readBat(6));   // mAh - full charge
-    dataString += ",";
-    dataString += String(hits);   // number of hits per measurement cycle
-
-    // send_packet over LoRa IoT
-    set_power(LORA_ON);
-    // Let LMIC handle background tasks for LoRa IoT
-    os_runstep();
-    send_packet();
-    Serial.println(dataString);
-    os_runstep();
-
-    for(int i=0; i<50; i++)  
-    {
-      delay(50);
-      digitalWrite(LED_red, HIGH);  // Blink for Dasa 
-      delay(50);
-      digitalWrite(LED_red, LOW);  
-      os_runstep();
-    }
-
-    set_power(LORA_OFF);
-  }
-  hits = 0;
-
-
-  // GPS **********************
-  set_power(GPS_ON);
-  delay(30);  
-  {
-    // switch to UTC time; UBX-CFG-RATE (6)+6+(2)=14 configuration bytes
-    const char cmd[14]={0xB5 ,0x62 ,0x06 ,0x08 ,0x06 ,0x00 ,0xE8 ,0x03 ,0x01 ,0x00 ,0x00 ,0x00 ,0x00 ,0x37};
-    for (int n=0;n<(14);n++) Serial1.write(cmd[n]); 
-  }
-
-  {
-    TinyGPSPlus gps;
-    int16_t gpschars = 0;
-    while (true)
-    {
-      if (Serial1.available() > 0) 
-      {
-        gps.encode(Serial1.read());
-        if (gpschars++ > 20000) break;
-        if (gps.location.isUpdated()) break;
+        dataString += "$Error";
       }
-    } 
-
-    Serial.print("#");
-    Serial.print(gps.charsProcessed());
-    Serial.print(" Lat ");
-    Serial.print(gps.location.rawLat().deg);
-    Serial.print(" ");
-    Serial.print(gps.location.rawLat().billionths);
-    Serial.print(", Lon ");
-    Serial.print(gps.location.rawLng().deg);
-    Serial.print(" ");
-    Serial.println(gps.location.rawLng().billionths);
-
-    uint32_t lat = round(gps.location.lat()*10000);
-    uint32_t lon = round(gps.location.lng()*10000);
-    uint16_t lat_short = lat % 65535;
-    uint16_t lon_short = lon % 65535;
-    int lat_diff = lat_short - lat_old;
-    int lon_diff = lon_short - lon_old;
-
-    Serial.print("#latdiff ");
-    Serial.print(lat_diff);
-    Serial.print(" londiff ");
-    Serial.println(lon_diff);
- 
-    if ((abs(lat_diff)>2) || (abs(lon_diff)>4)) // movement detection
-    {
-      lat_old = lat_short;
-      lon_old = lon_short;
-            
-      iot_message[0] = 0xff;
-      iot_message[1] = lat_short & 0xff;
-      iot_message[2] = lat_short >> 8;
-      iot_message[3] = lon_short & 0xff;
-      iot_message[4] = lon_short >> 8 ;
-        
+  
+      int16_t voltage = readBat(8);
+      iot_message[0] = round(voltage / 10) - 175;
+      int16_t current = readBat(10);
+      iot_message[1] = current;
+      iot_message[2] = (current >> 8) & 0x01;
+      iot_message[2] |= temp << 1;
+      iot_message[3] = hits & 0xff;
+      iot_message[4] = hits >> 8 ;
+  
+      /* DEBUG
+      Serial.println();
+      for(int i=0; i<5; i++)
+      {
+        Serial.println(iot_message[i],HEX);
+      }
+      */
+      
+      dataString += ",";
+      dataString += String(float(voltage)/1000);   // V - U
+      dataString += ",";
+      dataString += String(current);  // mA - I
+      dataString += ",";
+      dataString += String(readBat(4));   // mAh - remaining capacity
+      dataString += ",";
+      dataString += String(readBat(6));   // mAh - full charge
+      dataString += ",";
+      dataString += String(hits);   // number of hits per measurement cycle
+  
       // send_packet over LoRa IoT
       set_power(LORA_ON);
-
       // Let LMIC handle background tasks for LoRa IoT
+      os_runstep();
+      send_packet();
+      Serial.println(dataString);
+      os_runstep();
+  
       for(int i=0; i<50; i++)  
       {
         delay(50);
@@ -912,103 +842,182 @@ void loop()
         delay(50);
         digitalWrite(LED_red, LOW);  
         os_runstep();
-      }  
-
-      os_runstep();
-      send_packet();
-      os_runstep();
+      }
   
-      for(int i=0; i<100; i++)  
-      {
-        delay(50);
-        digitalWrite(LED_red, HIGH);  // Blink for Dasa 
-        delay(50);
-        digitalWrite(LED_red, LOW);  
-        os_runstep();
-      }  
       set_power(LORA_OFF);
     }
+    hits = 0;
+
   }
-
-  {    
-    // make a string for assembling the NMEA to log:
-    String dataString = "";
-
-    char incomingByte;
-    bool flag = false;
-    uint8_t messages = 0;
-    uint32_t nomessages = 0;
-    while(true)
+  else
+  {
+    TelemetryCounts = 0;
+    
+    // GPS **********************
+    set_power(GPS_ON);
+    delay(30);  
     {
-      if (Serial1.available()) 
+      // switch to UTC time; UBX-CFG-RATE (6)+6+(2)=14 configuration bytes
+      const char cmd[14]={0xB5 ,0x62 ,0x06 ,0x08 ,0x06 ,0x00 ,0xE8 ,0x03 ,0x01 ,0x00 ,0x00 ,0x00 ,0x00 ,0x37};
+      for (int n=0;n<(14);n++) Serial1.write(cmd[n]); 
+    }
+  
+    {
+      TinyGPSPlus gps;
+      int16_t gpschars = 0;
+      while (true)
       {
-        // read the incoming byte:
-        incomingByte = Serial1.read();
-        nomessages = 0;
-        
-        if (incomingByte == '$') {flag = true; messages++;};
-        if (messages > MSG_NO)
+        if (Serial1.available() > 0) 
         {
-          readRTC();
-                
-          dataString += "$TIME,";
-          dataString += String(tm); 
-          dataString += ".";
-          dataString += String(tm_s100); 
+          gps.encode(Serial1.read());
+          if (gpschars++ > 20000) break;
+          if (gps.location.isUpdated()) break;
+        }
+      } 
+  
+      Serial.print("#");
+      Serial.print(gps.charsProcessed());
+      Serial.print(" Lat ");
+      Serial.print(gps.location.rawLat().deg);
+      Serial.print(" ");
+      Serial.print(gps.location.rawLat().billionths);
+      Serial.print(", Lon ");
+      Serial.print(gps.location.rawLng().deg);
+      Serial.print(" ");
+      Serial.println(gps.location.rawLng().billionths);
+  
+      uint32_t lat = round(gps.location.lat()*10000);
+      uint32_t lon = round(gps.location.lng()*10000);
+      uint16_t lat_short = lat % 65535;
+      uint16_t lon_short = lon % 65535;
+      int lat_diff = lat_short - lat_old;
+      int lon_diff = lon_short - lon_old;
+  
+      Serial.print("#latdiff ");
+      Serial.print(lat_diff);
+      Serial.print(" londiff ");
+      Serial.println(lon_diff);
+   
+      if ((abs(lat_diff)>2) || (abs(lon_diff)>4)) // movement detection
+      {
+        lat_old = lat_short;
+        lon_old = lon_short;
+              
+        iot_message[0] = 0xff;
+        iot_message[1] = lat_short & 0xff;
+        iot_message[2] = lat_short >> 8;
+        iot_message[3] = lon_short & 0xff;
+        iot_message[4] = lon_short >> 8 ;
           
-          break;
-        }
-        
-        // say what you got:
-        if (flag && (messages<=MSG_NO)) dataString+=incomingByte;
-      }
-      else
-      {
-        nomessages++;  
-        if (nomessages > GPSerror) break; // preventing of forever waiting
-      }
-    }  
-    set_power(GPS_OFF);
-
-    {
-        set_power(SD_ON);
-        
-        // make sure that the default chip select pin is set to output
-        // see if the card is present and can be initialized:
-        if (!SD.begin(SS)) 
+        // send_packet over LoRa IoT
+        set_power(LORA_ON);
+  
+        // Let LMIC handle background tasks for LoRa IoT
+        for(int i=0; i<50; i++)  
         {
-          Serial.println("#Card failed, or not present");
-          // don't do anything more:
-          return;
-        }
-        
-        // open the file. note that only one file can be open at a time,
-        // so you have to close this one before opening another.
-        File dataFile = SD.open(filename, FILE_WRITE);
-        
-        // if the file is available, write to it:
-        if (dataFile) 
-        {
-          digitalWrite(LED_red, HIGH);  // Blink for Dasa
-          dataFile.println(dataString);  // write to SDcard (800 ms)     
-          digitalWrite(LED_red, LOW);          
-          dataFile.close();
+          delay(50);
+          digitalWrite(LED_red, HIGH);  // Blink for Dasa 
+          delay(50);
+          digitalWrite(LED_red, LOW);  
+          os_runstep();
         }  
-        // if the file isn't open, pop up an error:
-        else 
+  
+        os_runstep();
+        send_packet();
+        os_runstep();
+    
+        for(int i=0; i<100; i++)  
         {
-          Serial.println("#error opening datalog.txt");
+          delay(50);
+          digitalWrite(LED_red, HIGH);  // Blink for Dasa 
+          delay(50);
+          digitalWrite(LED_red, LOW);  
+          os_runstep();
+        }  
+        set_power(LORA_OFF);
+      }
+    }
+  
+    {    
+      // make a string for assembling the NMEA to log:
+      String dataString = "";
+  
+      char incomingByte;
+      bool flag = false;
+      uint8_t messages = 0;
+      uint32_t nomessages = 0;
+      while(true)
+      {
+        if (Serial1.available()) 
+        {
+          // read the incoming byte:
+          incomingByte = Serial1.read();
+          nomessages = 0;
+          
+          if (incomingByte == '$') {flag = true; messages++;};
+          if (messages > MSG_NO)
+          {
+            readRTC();
+                  
+            dataString += "$TIME,";
+            dataString += String(tm); 
+            dataString += ".";
+            dataString += String(tm_s100); 
+            
+            break;
+          }
+          
+          // say what you got:
+          if (flag && (messages<=MSG_NO)) dataString+=incomingByte;
         }
-        
-        set_power(SD_OFF);
-    }  
-#ifdef DEBUG
-    Serial.println(dataString);  // print to terminal 
-    //!!!wdt_reset(); //Reset WDT
-#endif
+        else
+        {
+          nomessages++;  
+          if (nomessages > GPSerror) break; // preventing of forever waiting
+        }
+      }  
+      set_power(GPS_OFF);
+  
+      {
+          set_power(SD_ON);
+          
+          // make sure that the default chip select pin is set to output
+          // see if the card is present and can be initialized:
+          if (!SD.begin(SS)) 
+          {
+            Serial.println("#Card failed, or not present");
+            // don't do anything more:
+            return;
+          }
+          
+          // open the file. note that only one file can be open at a time,
+          // so you have to close this one before opening another.
+          File dataFile = SD.open(filename, FILE_WRITE);
+          
+          // if the file is available, write to it:
+          if (dataFile) 
+          {
+            digitalWrite(LED_red, HIGH);  // Blink for Dasa
+            dataFile.println(dataString);  // write to SDcard (800 ms)     
+            digitalWrite(LED_red, LOW);          
+            dataFile.close();
+          }  
+          // if the file isn't open, pop up an error:
+          else 
+          {
+            Serial.println("#error opening datalog.txt");
+          }
+          
+          set_power(SD_OFF);
+      }  
+  #ifdef DEBUG
+      Serial.println(dataString);  // print to terminal 
+      //!!!wdt_reset(); //Reset WDT
+  #endif
+    }
   }
- 
-  for(uint16_t i=0; i<(GPSdelay); i++)  // measurements between GPS aquisition
+   
+  for(uint16_t i=0; i<(GPSdelay); i++)  // measurements between telemetry sendings
   {
     PORTB = 1;                          // Set reset output for peak detector to H
     ADMUX = (analog_reference << 6) | 0b00000; // Select A0 single ended
@@ -1112,11 +1121,6 @@ void loop()
       dataString += String(float(readBat(8))/1000);   // V - U
       dataString += ",";
       dataString += String(readBat(10));  // mA - I
-//      dataString += ",";
-//      dataString += String(readBat(4));   // mAh - remaining capacity
-//      dataString += ",";
-//      dataString += String(readBat(6));   // mAh - full charge
-//!!!
       dataString += ",";
       dataString += String(hits);   
             
