@@ -6,8 +6,9 @@ String FWversion = "GEO_1024_v3"; // Output data format (multiple files)
 #define EVENTS 500 // maximal number of recorded events
 #define GPSerror 700000 // number of cycles for waitig for GPS in case of GPS error 
 #define MSG_NO 20 // number of recorded NMEA messages
-//#define GPSdelay  3   // number of measurements between obtaining GPS position
-#define GPSdelay 346   // number of measurements between obtaining GPS position and sending telemetry
+#define GPSdelay 10   // number of sending telemetry for one GPS aquisition (1 hour)
+//#define TELEdelay 3   // 
+#define TELEdelay 34   // number of measurements between sending telemetry (6 minutes)
                        // 346 = cca 1 h
 #define MAXFILESIZE 28000000 // in bytes, 4 MB per day, 28 MB per week, 122 MB per month
 #define MAXCOUNT 53000 // in measurement cycles, 7 479 per day, 52353 per week, 224 369 per month
@@ -126,16 +127,15 @@ uint32_t serialhash = 0;
 uint8_t lo, hi;
 uint16_t u_sensor, maximum;
 Adafruit_MPL3115A2 sensor = Adafruit_MPL3115A2();
-uint32_t last_packet = 0;
 uint16_t hits;
 uint16_t lat_old;
 uint16_t lon_old;
 
-// 1290c00806a20090c013a000a0000086
-String crystal = "D16x30";
-static const PROGMEM u1_t NWKSKEY[16] = {0xD8,0xF7,0x35,0x50,0x0C,0x85,0x10,0xEA,0x5E,0xFA,0xCD,0xEF,0x89,0xBC,0x11,0xAC};
-static const u1_t PROGMEM APPSKEY[16] = {0x93,0x67,0xC1,0x39,0xA6,0x1E,0xF3,0x9D,0xDB,0x3A,0xB2,0xA7,0xFA,0x5C,0x52,0x48};
-static const u4_t DEVADDR = 0x260BB492; 
+// 1290c00806a200921812a000a0000045
+String crystal = "NaI(Tl)-D18x30";
+static const PROGMEM u1_t NWKSKEY[16] = {0xCA,0x89,0x44,0x10,0xDA,0x01,0xA0,0xD5,0x5E,0xBA,0x01,0xBE,0xB0,0x33,0x91,0x85};
+static const u1_t PROGMEM APPSKEY[16] = {0x4F,0x5F,0xB3,0x12,0xE1,0x16,0x0B,0x91,0xAC,0x78,0x11,0xA1,0x6A,0x00,0x72,0x0A};
+static const u4_t DEVADDR = 0x260B06DE; 
 
 /*
 // 1290c00806a200908013a000a00000dd
@@ -413,9 +413,20 @@ void send_packet()
 {
     LMIC_setTxData2(1, iot_message, sizeof(iot_message), 0);
     Serial.println(F("# Packet queued"));
-
-    last_packet = millis();
 }
+
+void waiting_for_rx()
+{
+  int period = 3000;
+  unsigned long time_start = millis();
+    
+  while (true)
+  {
+    if(millis() - time_start > period) return;
+    os_runstep();                 // Rx1 and Rx2    
+  }
+}
+  
 
 #define SD_ON     1
 #define SD_OFF    2
@@ -435,9 +446,9 @@ void set_power(uint8_t state)
       PORTB |= 0b00001110;
       digitalWrite(SS, LOW);  
       break;
-    case SD_OFF:
-      digitalWrite(SS, HIGH);  
-      PORTB &= 0b11110001;
+    case SD_OFF: // Do not power off
+      //digitalWrite(SS, HIGH);  
+      //PORTB &= 0b11110001;
       break;
     case GPS_ON:
       Serial1.begin(38400);
@@ -454,7 +465,7 @@ void set_power(uint8_t state)
     case LORA_ON:
       digitalWrite(IOT_CS, LOW);  
       break;
-    case LORA_OFF:
+    case LORA_OFF: 
       digitalWrite(IOT_CS, HIGH);  
       break;
     default:
@@ -481,8 +492,6 @@ void send_GPS_packet()
     //p = pack_latlon(p, gps.location.lng());
     LMIC_setTxData2(1, iot_message, sizeof(iot_message), 0);
     Serial.println(F("# Packet queued"));
-
-    last_packet = millis();
 }
   
 void setup()
@@ -756,7 +765,7 @@ void loop()
 
   //!!!wdt_reset(); //Reset WDT
 
-  if (TelemetryCounts++ < 24)
+  if (TelemetryCounts++ < GPSdelay)
   {
     {
       // make a string for assembling the data to log:
@@ -829,25 +838,17 @@ void loop()
   
       // send_packet over LoRa IoT
       set_power(LORA_ON);
-      // Let LMIC handle background tasks for LoRa IoT
-      os_runstep();
+      // Let LMIC handle tasks for LoRa IoT
       send_packet();
+      waiting_for_rx();
+      digitalWrite(LED_red, HIGH);  // Blink 
+      delay(20);
+      digitalWrite(LED_red, LOW);  
       Serial.println(dataString);
-      os_runstep();
-  
-      for(int i=0; i<50; i++)  
-      {
-        delay(50);
-        digitalWrite(LED_red, HIGH);  // Blink for Dasa 
-        delay(50);
-        digitalWrite(LED_red, LOW);  
-        os_runstep();
-      }
-  
+    
       set_power(LORA_OFF);
     }
     hits = 0;
-
   }
   else
   {
@@ -911,29 +912,12 @@ void loop()
           
         // send_packet over LoRa IoT
         set_power(LORA_ON);
-  
-        // Let LMIC handle background tasks for LoRa IoT
-        for(int i=0; i<50; i++)  
-        {
-          delay(50);
-          digitalWrite(LED_red, HIGH);  // Blink for Dasa 
-          delay(50);
-          digitalWrite(LED_red, LOW);  
-          os_runstep();
-        }  
-  
-        os_runstep();
         send_packet();
-        os_runstep();
+        waiting_for_rx();
+        digitalWrite(LED_red, HIGH);  // Blink 
+        delay(20);
+        digitalWrite(LED_red, LOW);  
     
-        for(int i=0; i<100; i++)  
-        {
-          delay(50);
-          digitalWrite(LED_red, HIGH);  // Blink for Dasa 
-          delay(50);
-          digitalWrite(LED_red, LOW);  
-          os_runstep();
-        }  
         set_power(LORA_OFF);
       }
     }
@@ -1017,7 +1001,7 @@ void loop()
     }
   }
    
-  for(uint16_t i=0; i<(GPSdelay); i++)  // measurements between telemetry sendings
+  for(uint16_t i=0; i<(TELEdelay); i++)  // measurements between telemetry sendings
   {
     PORTB = 1;                          // Set reset output for peak detector to H
     ADMUX = (analog_reference << 6) | 0b00000; // Select A0 single ended
