@@ -1,15 +1,18 @@
 #define DEBUG // Please comment it if you are not debugging
 String FWversion = "GEO_1024_v3"; // Output data format (multiple files)
 
+// LTO cells 
+// https://files.gwl.eu/inc/_doc/attach/StoItem/7015/GWL_LTO1865_Rechargeable.pdf
+
 #define RANGE 25   // histogram range
 #define NOISE  6  // first channel for reporting flux to IoT
 #define EVENTS 500 // maximal number of recorded events
 #define GPSerror 700000 // number of cycles for waitig for GPS in case of GPS error 
 #define MSG_NO 20 // number of recorded NMEA messages
-#define GPSdelay 10   // number of sending telemetry for one GPS aquisition (1 hour)
-//#define TELEdelay 3   // 
-#define TELEdelay 34   // number of measurements between sending telemetry (6 minutes)
-                       // 346 = cca 1 h
+#define GPSdelay 24   // number of sending telemetry for one GPS aquisition (12 hour)
+#define TELEdelay 1   // 
+//#define TELEdelay 68   // number of measurements between sending telemetry (30 minutes)
+                      
 #define MAXFILESIZE 28000000 // in bytes, 4 MB per day, 28 MB per week, 122 MB per month
 #define MAXCOUNT 53000 // in measurement cycles, 7 479 per day, 52353 per week, 224 369 per month
 #define MAXFILES 100 // maximal number of files on SD card
@@ -128,8 +131,6 @@ uint8_t lo, hi;
 uint16_t u_sensor, maximum;
 Adafruit_MPL3115A2 sensor = Adafruit_MPL3115A2();
 uint16_t hits;
-uint16_t lat_old;
-uint16_t lon_old;
 
 // 1290c00806a200921812a000a0000045
 String crystal = "NaI(Tl)-D18x30";
@@ -189,11 +190,9 @@ static const u1_t PROGMEM APPSKEY[16] = {0x27,0x2C,0x7A,0x13,0xA9,0xC4,0xB6,0x9D
 static const u4_t DEVADDR = 0x260BD7C1;
 
 // 1290c00806a20091c057a000a0000036
-// Network Session Key
+String crystal = "NaI(Tl)-D16x30";
 static const PROGMEM u1_t NWKSKEY[16] = {0x3F,0x76,0xD6,0xEB,0xFC,0x9A,0x42,0x2A,0xD9,0x06,0x81,0x59,0x8C,0xAE,0x3E,0x60};
-// App Session Key
 static const u1_t PROGMEM APPSKEY[16] = {0xD8,0x5F,0x50,0x3E,0x28,0xC2,0xF6,0x61,0xE2,0x81,0x10,0xF5,0xFF,0x90,0x02,0x2B};
-// Device Address
 static const u4_t DEVADDR = 0x260B4150; 
 
 // 1290c00806a20091e412a000a0000010
@@ -229,25 +228,25 @@ u1_t os_getRegion (void) { return LMIC_regionCode(0); }
 
 // Schedule TX every this many milliseconds (might become longer due to duty
 // cycle limitations).
-const unsigned TX_INTERVAL = 20000;
+//const unsigned TX_INTERVAL = 20000;
 
 // All pin assignments use Arduino pin numbers (e.g. what you would pass
 // to digitalWrite), or LMIC_UNUSED_PIN when a pin is not connected.
 const lmic_pinmap lmic_pins = {
     // NSS input pin for SPI communication (required)
-    .nss = 20,
+    .nss = IOT_CS,
     .tx = LMIC_CONTROLLED_BY_DIO2,
     .rx = LMIC_UNUSED_PIN,
     // Radio reset output pin (active high for SX1276, active low for
     // others). When omitted, reset is skipped which might cause problems.
-    .rst = 21,
+    .rst = IOT_RESET,
     // DIO input pins.
     //   For SX127x, LoRa needs DIO0 and DIO1, FSK needs DIO0, DIO1 and DIO2
     //   For SX126x, Only DIO1 is needed (so leave DIO0 and DIO2 as LMIC_UNUSED_PIN)
-    .dio = {/* DIO0 */ LMIC_UNUSED_PIN, /* DIO1 */ 19, /* DIO2 */ LMIC_UNUSED_PIN},
+    .dio = {/* DIO0 */ LMIC_UNUSED_PIN, /* DIO1 */ IOT_DIO1, /* DIO2 */ LMIC_UNUSED_PIN},
     // Busy input pin (SX126x only). When omitted, a delay is used which might
     // cause problems.
-    .busy = 18,
+    .busy = IOT_BUSY,
     .tcxo = LMIC_UNUSED_PIN,
 };
 
@@ -412,18 +411,33 @@ uint8_t iot_message[5];
 void send_packet()
 {
     LMIC_setTxData2(1, iot_message, sizeof(iot_message), 0);
+    if ((LMIC.opmode & OP_TXRXPEND)!=OP_TXRXPEND) 
+    {
+      //wdt_enable(WDTO_2S);
+      Serial.println(F("# Packet is not in queue"));
+      //while(true);
+    }
     Serial.println(F("# Packet queued"));
 }
 
 void waiting_for_rx()
 {
-  int period = 3000;
+  int period = 9000;
   unsigned long time_start = millis();
+  int next = 0;
     
   while (true)
   {
-    if(millis() - time_start > period) return;
-    os_runstep();                 // Rx1 and Rx2    
+    os_runstep();                 // Rx1 and Rx2
+    if((next == 0) && ((millis() - time_start) > 1000)) { next =1; Serial.println(1);}   
+    if((next == 1) && ((millis() - time_start) > 2000)) { next =2; Serial.println(2);}   
+    if((next == 2) && ((millis() - time_start) > 3000)) { next =3; Serial.println(3);}   
+    if((next == 3) && ((millis() - time_start) > 4000)) { next =4; Serial.println(4);}   
+    if((next == 4) && ((millis() - time_start) > 5000)) { next =5; Serial.println(5);}   
+    if((next == 5) && ((millis() - time_start) > 6000)) { next =6; Serial.println(6);}   
+    if((next == 6) && ((millis() - time_start) > 7000)) { next =7; Serial.println(7);}   
+    if((next == 7) && ((millis() - time_start) > 8000)) { next =8; Serial.println(8);}   
+    if((millis() - time_start) > period) return;
   }
 }
   
@@ -452,6 +466,7 @@ void set_power(uint8_t state)
       break;
     case GPS_ON:
       Serial1.begin(38400);
+      //Serial1.begin(9600);  // Old GPS
       digitalWrite(GPSpower, HIGH);  
       break;      
     case GPS_OFF:
@@ -496,6 +511,7 @@ void send_GPS_packet()
   
 void setup()
 {
+  wdt_disable();
   pinMode(SDpower1, OUTPUT);  // SDcard interface
   pinMode(SDpower2, OUTPUT);     
   pinMode(SDpower3, OUTPUT);     
@@ -669,9 +685,11 @@ void setup()
     // explicit).
     LMIC.dn2Freq = 869525000;
     LMIC.dn2Dr = EU_DR_SF9;
-  
+     
     // Set data rate for uplink
-    LMIC_setDrTxpow(EU_DR_SF10, KEEP_TXPOWADJ);
+    //LMIC_setDrTxpow(EU_DR_SF10, KEEP_TXPOWADJ);
+    LMIC_setDrTxpow(EU_DR_SF9, 20);
+    //LMIC_setDrTxpow(EU_DR_SF10, 20);
     #elif defined(CFG_us915)
     // NA-US channels 0-71 are configured automatically
     // but only one group of 8 should (a subband) should be active
@@ -750,8 +768,6 @@ void setup()
   Serial.println("#Hmmm...");
 
   hits = 0;
-  lat_old = 0;
-  lon_old = 0;
   //!!! wdt_reset(); //Reset WDT
 }
 
@@ -807,12 +823,13 @@ void loop()
       {
         dataString += "$Error";
       }
-  
+
+      // Assemble IoT message
       int16_t voltage = readBat(8);
       iot_message[0] = round(voltage / 10) - 175;
       int16_t current = readBat(10);
-      iot_message[1] = current;
-      iot_message[2] = (current >> 8) & 0x01;
+      iot_message[1] = current >> 3;
+      iot_message[2] = (current >> (8+3)) & 0x01;
       iot_message[2] |= temp << 1;
       iot_message[3] = hits & 0xff;
       iot_message[4] = hits >> 8 ;
@@ -848,7 +865,6 @@ void loop()
     
       set_power(LORA_OFF);
     }
-    hits = 0;
   }
   else
   {
@@ -891,19 +907,9 @@ void loop()
       uint32_t lon = round(gps.location.lng()*10000);
       uint16_t lat_short = lat % 65535;
       uint16_t lon_short = lon % 65535;
-      int lat_diff = lat_short - lat_old;
-      int lon_diff = lon_short - lon_old;
-  
-      Serial.print("#latdiff ");
-      Serial.print(lat_diff);
-      Serial.print(" londiff ");
-      Serial.println(lon_diff);
    
-      if ((abs(lat_diff)>2) || (abs(lon_diff)>4)) // movement detection
-      {
-        lat_old = lat_short;
-        lon_old = lon_short;
-              
+      if ((lat!=0) && (lon!=0)) // FIX detection
+      {              
         iot_message[0] = 0xff;
         iot_message[1] = lat_short & 0xff;
         iot_message[2] = lat_short >> 8;
@@ -1000,7 +1006,8 @@ void loop()
   #endif
     }
   }
-   
+
+  hits = 0;
   for(uint16_t i=0; i<(TELEdelay); i++)  // measurements between telemetry sendings
   {
     PORTB = 1;                          // Set reset output for peak detector to H
