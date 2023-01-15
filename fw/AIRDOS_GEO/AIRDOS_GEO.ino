@@ -1,5 +1,5 @@
 #define DEBUG // Please comment it if you are not debugging
-String FWversion = "GEO_1024_v3"; // Output data format (multiple files)
+String FWversion = "GEO_1024_v4"; // Output data format (multiple files)
 
 // LTO cells 
 // https://files.gwl.eu/inc/_doc/attach/StoItem/7015/GWL_LTO1865_Rechargeable.pdf
@@ -9,9 +9,9 @@ String FWversion = "GEO_1024_v3"; // Output data format (multiple files)
 #define EVENTS 500 // maximal number of recorded events
 #define GPSerror 700000 // number of cycles for waitig for GPS in case of GPS error 
 #define MSG_NO 20 // number of recorded NMEA messages
-#define GPSdelay 24   // number of sending telemetry for one GPS aquisition (12 hour)
-#define TELEdelay 1   // 
-//#define TELEdelay 68   // number of measurements between sending telemetry (30 minutes)
+#define GPSdelay 24   // number of sending telemetry per one GPS aquisition (12 hour)
+//#define TELEdelay 1   // 
+#define TELEdelay 136   // number of measurements between sending telemetry (30 minutes)
                       
 #define MAXFILESIZE 28000000 // in bytes, 4 MB per day, 28 MB per week, 122 MB per month
 #define MAXCOUNT 53000 // in measurement cycles, 7 479 per day, 52353 per week, 224 369 per month
@@ -132,11 +132,11 @@ uint16_t u_sensor, maximum;
 Adafruit_MPL3115A2 sensor = Adafruit_MPL3115A2();
 uint16_t hits;
 
-// 1290c00806a200921812a000a0000045
-String crystal = "NaI(Tl)-D18x30";
-static const PROGMEM u1_t NWKSKEY[16] = {0xCA,0x89,0x44,0x10,0xDA,0x01,0xA0,0xD5,0x5E,0xBA,0x01,0xBE,0xB0,0x33,0x91,0x85};
-static const u1_t PROGMEM APPSKEY[16] = {0x4F,0x5F,0xB3,0x12,0xE1,0x16,0x0B,0x91,0xAC,0x78,0x11,0xA1,0x6A,0x00,0x72,0x0A};
-static const u4_t DEVADDR = 0x260B06DE; 
+// 1290c00806a20090c013a000a0000086
+String crystal = "D16x30";
+static const PROGMEM u1_t NWKSKEY[16] = {0xD8,0xF7,0x35,0x50,0x0C,0x85,0x10,0xEA,0x5E,0xFA,0xCD,0xEF,0x89,0xBC,0x11,0xAC};
+static const u1_t PROGMEM APPSKEY[16] = {0x93,0x67,0xC1,0x39,0xA6,0x1E,0xF3,0x9D,0xDB,0x3A,0xB2,0xA7,0xFA,0x5C,0x52,0x48};
+static const u4_t DEVADDR = 0x260BB492;
 
 /*
 // 1290c00806a200908013a000a00000dd
@@ -422,23 +422,24 @@ void send_packet()
 
 void waiting_for_rx()
 {
-  int period = 9000;
   unsigned long time_start = millis();
   int next = 0;
     
   while (true)
   {
     os_runstep();                 // Rx1 and Rx2
-    if((next == 0) && ((millis() - time_start) > 1000)) { next =1; Serial.println(1);}   
-    if((next == 1) && ((millis() - time_start) > 2000)) { next =2; Serial.println(2);}   
-    if((next == 2) && ((millis() - time_start) > 3000)) { next =3; Serial.println(3);}   
-    if((next == 3) && ((millis() - time_start) > 4000)) { next =4; Serial.println(4);}   
-    if((next == 4) && ((millis() - time_start) > 5000)) { next =5; Serial.println(5);}   
-    if((next == 5) && ((millis() - time_start) > 6000)) { next =6; Serial.println(6);}   
-    if((next == 6) && ((millis() - time_start) > 7000)) { next =7; Serial.println(7);}   
-    if((next == 7) && ((millis() - time_start) > 8000)) { next =8; Serial.println(8);}   
-    if((millis() - time_start) > period) return;
+    if((next == 0) && ((millis() - time_start) > 1000)) { next =1; Serial.println("1");}   
+    if((next == 1) && ((millis() - time_start) > 2000)) { next =2; Serial.println("2");}   
+    if((next == 2) && ((millis() - time_start) > 3000)) { next =3; Serial.println("3");}   
+    if((next == 3) && ((millis() - time_start) > 4000)) { next =4; Serial.println("4");}   
+    if((next == 4) && ((millis() - time_start) > 5000)) { next =5; Serial.println("5");}   
+    if((next == 5) && ((millis() - time_start) > 6000)) { next =6; Serial.println("6");}   
+    if((next == 6) && ((millis() - time_start) > 7000)) { next =7; Serial.println("7");}   
+    if((next == 7) && ((millis() - time_start) > 8000)) { next =8; Serial.println("8");}   
+    if((next == 8) && ((millis() - time_start) > 9000)) { next =9; Serial.println("9");}   
+    if((millis() - time_start) > 10000) break;
   }
+  Serial.println("10");
 }
   
 
@@ -508,6 +509,18 @@ void send_GPS_packet()
     LMIC_setTxData2(1, iot_message, sizeof(iot_message), 0);
     Serial.println(F("# Packet queued"));
 }
+
+// These are defined by the LoRaWAN specification
+enum {
+    EU_DR_SF12 = 0,
+    EU_DR_SF11 = 1,
+    EU_DR_SF10 = 2,
+    EU_DR_SF9 = 3,
+    EU_DR_SF8 = 4,
+    EU_DR_SF7 = 5,
+    EU_DR_SF7_BW250 = 6,
+    EU_DR_FSK = 7,
+};
   
 void setup()
 {
@@ -649,19 +662,7 @@ void setup()
     LMIC_setSession (0x1, DEVADDR, NWKSKEY, APPSKEY);
     #endif
     
-    #if defined(CFG_eu868)
-    // These are defined by the LoRaWAN specification
-    enum {
-        EU_DR_SF12 = 0,
-        EU_DR_SF11 = 1,
-        EU_DR_SF10 = 2,
-        EU_DR_SF9 = 3,
-        EU_DR_SF8 = 4,
-        EU_DR_SF7 = 5,
-        EU_DR_SF7_BW250 = 6,
-        EU_DR_FSK = 7,
-    };
-  
+    #if defined(CFG_eu868)  
     // Set up the channels used by the Things Network, which corresponds
     // to the defaults of most gateways. Without this, only three base
     // channels from the LoRaWAN specification are used, which certainly
@@ -687,8 +688,9 @@ void setup()
     LMIC.dn2Dr = EU_DR_SF9;
      
     // Set data rate for uplink
-    //LMIC_setDrTxpow(EU_DR_SF10, KEEP_TXPOWADJ);
-    LMIC_setDrTxpow(EU_DR_SF9, 20);
+    //LMIC_setDrTxpow(EU_DR_SF12, KEEP_TXPOWADJ);
+    LMIC_setDrTxpow(EU_DR_SF12, 20);
+    //LMIC_setDrTxpow(EU_DR_SF9, 20);
     //LMIC_setDrTxpow(EU_DR_SF10, 20);
     #elif defined(CFG_us915)
     // NA-US channels 0-71 are configured automatically
@@ -699,9 +701,12 @@ void setup()
     // but it seems BasicMac only has LMIC_disableChannel.
     #endif
   
-    // Disable link check validation
-    LMIC_setLinkCheckMode(0);
-  
+    // Disable/Enable link check validation
+    //LMIC_setLinkCheckMode(0);
+    LMIC_setLinkCheckMode(1);
+    // Disable duty cycle limitation
+    LMIC_disableDC();
+      
     // Enable this to increase the receive window size, to compensate
     // for an inaccurate clock.  // This compensate for +/- 10% clock
     // error, a lower value will likely be more appropriate.
@@ -783,6 +788,7 @@ void loop()
 
   if (TelemetryCounts++ < GPSdelay)
   {
+    if ((TelemetryCounts % 10) == 0) LMIC_setDrTxpow(EU_DR_SF10, 20); // preventing using too high SF
     {
       // make a string for assembling the data to log:
       String dataString = "";
@@ -924,6 +930,7 @@ void loop()
         delay(20);
         digitalWrite(LED_red, LOW);  
     
+        LMIC_setDrTxpow(EU_DR_SF12, 20); // Set SF12 ones per day
         set_power(LORA_OFF);
       }
     }
