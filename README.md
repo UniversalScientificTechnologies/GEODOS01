@@ -24,6 +24,14 @@ GEODOS devices are installed on multiple locations in Šumava. For example examp
 
 ![GEODOS01A Installed on Polednik site](/doc/src/img/GEODOS_Polednik_site.jpg)
 
+
+#### Kosetice Atmospheric Tower
+
+The [National Atmospheric Observatory Košetice](https://actris-ri.cz/) (NAOK) was established by the Czech Hydrometeorological Institute as a department specialized in long-term air quality monitoring and research at the background scale in 1988. The GEODOS is located here by [CRREAT project](http://www.ujf.cas.cz/en/research-development/large-research-infrastructures-and-centres/crreat/objectives/).
+
+![GEODOS01B Installed Kosetice Atmospheric Tower](/doc/src/img/kosetice_atmospheric_tower.jpg)
+
+
 ### Technical parameters
 
 * Detection element: scintillation crystal NaI(Tl) 10 mm in diameter, 20 mm in length, integrated with SiPM detector
@@ -33,10 +41,10 @@ GEODOS devices are installed on multiple locations in Šumava. For example examp
 * Record’s content: energy and time of each event above the specified energy (1MeV by default)
 * Record’s periodicity: 10 s (maximal dead time 2 s)
 * Time resolution: 20 us
-* ADC Conversion time: 104 us 
+* ADC Conversion time: 104 us
 * [Dead time](https://en.wikipedia.org/wiki/Dead_time): 2 us
 * Accuracy of event’s time: 500 ns
-* Energy range: 0.3 to 1 MeV (0,2 MeV resolution). The range could be increased up to 40 MeV by component values selection. 
+* Energy range: 0.3 to 1 MeV (0,2 MeV resolution). The range could be increased up to 40 MeV by component values selection.
 * Open-source HW and SW
 * Device status indicator type: LED
 * Uniterrupted measurement campaign interval is limited by SDcard capacity, if sufficient power is available during the whole period
