@@ -4,7 +4,7 @@
 // 1024 ch. from 0.27 to cca 15 MeV
 
 #define DEBUG // Please comment it if you are not debugging
-String FWversion = "C_ABS_1024_v1"; // Output data format
+String FWversion = "C_ABS_1024_v2"; // Output data format
 
 #define RANGE 28  // histogram range
 #define EVENTS 500 // maximal number of recorded events
@@ -113,10 +113,12 @@ TX1/INT1 (D 11) PD3 17|        |24 PC2 (D 18) TCK
 #define MISO      6    // PB6
 #define SCK       7    // PB7
 #define INT       20   // PC4
-#define IOT_RESET 21   // PC5
+#define RESETITKO_ON  21   // PC5
 #define IOT_BUSY  18   // PC2
 #define IOT_DIO1  19   // PC3
 #define IOT_CS    20   // PC4
+#define RESETITKO_OFF 22   // PC6
+
 
 uint16_t count = 0;
 uint32_t serialhash = 0;
@@ -249,6 +251,12 @@ void setup()
   pinMode(MISO, OUTPUT);     
   pinMode(SCK, OUTPUT);  
   pinMode(RESET, OUTPUT);   // reset signal for peak detetor
+  pinMode(RESETITKO_ON, OUTPUT);   // resetitko pro Marka
+  pinMode(RESETITKO_OFF, OUTPUT);   // resetitko pro Marka
+  digitalWrite(RESETITKO_ON, LOW);  
+  digitalWrite(RESETITKO_OFF, HIGH);
+  delay(100);  
+  digitalWrite(RESETITKO_OFF, LOW);
 
   set_power(SD_OFF);
   set_power(GPS_OFF);
@@ -353,6 +361,12 @@ void setup()
     const char cmd[14]={0xB5 ,0x62 ,0x06 ,0x08 ,0x06 ,0x00 ,0xE8 ,0x03 ,0x01 ,0x00 ,0x00 ,0x00 ,0x00 ,0x37};
     for (int n=0;n<(14);n++) Serial1.write(cmd[n]); 
   }
+
+  delay(10000);
+  digitalWrite(RESETITKO_ON, HIGH);    // resetitko pro Marka  
+  delay(100);  
+  digitalWrite(RESETITKO_ON, LOW);
+  
   
   Serial.println("#Hmmm...");
   

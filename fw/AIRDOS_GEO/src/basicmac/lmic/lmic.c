@@ -1886,7 +1886,8 @@ static bit_t decodeFrame (void) {
         case MCMD_RXTM_REQ: {
             LMIC.dn1Dly = opts[oidx+1] & 0xF;
             if( LMIC.dn1Dly == 0 )
-                LMIC.dn1Dly = 1;
+//!!!                LMIC.dn1Dly = 1;
+                LMIC.dn1Dly = DELAY_DNW1;
             LMIC.dn1DlyAns = 0x80;
             opmodePoll();
             oidx += 2;
@@ -3260,7 +3261,8 @@ void LMIC_reset_ex (u1_t regionCode) {
     LMIC.errcr        = CR_4_5;
     LMIC.adrEnabled   = FCT_ADREN;
     LMIC.datarate     = fastest125();
-    LMIC.dn1Dly       = 1;
+//!!!    LMIC.dn1Dly       = 1;
+    LMIC.dn1Dly       = DELAY_DNW1;
     LMIC.dn2Dr        = REGION.rx2Dr;    // we need this for 2nd DN window of join accept
     LMIC.dn2Freq      = REGION.rx2Freq;  // ditto
 #if !defined(DISABLE_CLASSB)
@@ -3395,7 +3397,8 @@ void LMIC_setSession (u4_t netid, devaddr_t devaddr, const u1_t* nwkKey,
     stateJustJoined();
     setDrTxpow(DRCHG_SET, fastest125(), 0);
     LMIC.dn2Dr = REGION.rx2Dr;
-    LMIC.dn1Dly = 1;
+//!!!    LMIC.dn1Dly = 1;
+    LMIC.dn1Dly = DELAY_DNW1;
     LMIC.dn1DrOffIdx = 0;
 }
 

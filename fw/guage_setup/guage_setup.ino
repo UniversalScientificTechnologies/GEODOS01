@@ -362,6 +362,8 @@ void loop()
   Serial.print("Cycle Delta: ");
   Serial.println(ReadFlashByte(49,21));
 
+  ResetGuage();
+
   while(true)
   {
     PrintBatteryStatus();
