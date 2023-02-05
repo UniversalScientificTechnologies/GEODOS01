@@ -80,15 +80,14 @@ For remote areas, mounting a IoT gateway in radio range of GEODOS instruments co
 As a second message, when turned on, a string is sent that uniquely identifies the device.
 
 ```
-$DOS,LABDOS01A,L02,256,379276a,1290c00806a200914056a000a0000086
+$DOS,GEODOS01B,L02,256,379276a,1290c00806a200914056a000a0000086
 ```
 * `$DOS` - is the first character of the message string
-* `LABDOS01A` - Name of the device. In this case, it is LABDOS
+* `GEODOS01B` - Name of the device. In this case, it is GEODOS
 * `L02`- FW version
 * `256` - ADC offset
 * `379276a` - Hash of commit with this firmware
-* `1290c00806a200914056a000a0000086` - Unique serial number of LABDOS dosemeters
-
+* `1290c00806a200914056a000a0000086` - Unique serial number of dosemeter instrument
 
 #### Data message
 
