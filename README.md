@@ -51,6 +51,7 @@ The [National Atmospheric Observatory Košetice](https://actris-ri.cz/) (NAOK) w
 * LoRa connection to IoT network
 * Operational temperature range: -20°C to +35°C
 * Charging temperature range: 0°C to +45°C (the internal backup Li-ion cell is not recharged outside of this range )
+* Dimensions 254x180x111 mm [enclosure TK PS 2518-11-o](https://www.spelsberg.co.uk/industrial-housing/with-/-without-metric-knock-outs/11090801/)
 * Weather resistivity IP 65
 
 
