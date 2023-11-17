@@ -1,4 +1,4 @@
-# GEODOS01B - Stationary ionizing radiation monitor
+# GEODOS01B - Stand alone ionizing radiation monitor
 
 *Open-source scintillation detector of ionizing radiation. The device can be further modified according to specific requirements. Character of its construction makes it especially suitable for placement into mountaints for in-field measurements*
 
@@ -40,6 +40,7 @@ The [National Atmospheric Observatory Košetice](https://actris-ri.cz/) (NAOK) w
 * Data memory: SD card
 * Record’s content: energy and time of each event above the specified energy (1MeV by default)
 * Record’s periodicity: 10 s (maximal dead time 2 s)
+* Time resolution: 20 us
 * ADC Conversion time: 104 us
 * [Dead time](https://en.wikipedia.org/wiki/Dead_time): 2 us
 * Accuracy of event’s time: 500 ns
@@ -50,7 +51,8 @@ The [National Atmospheric Observatory Košetice](https://actris-ri.cz/) (NAOK) w
 * Uniterrupted measurement campaign interval: 6 months for 2 GB SD card
 * LoRa connection to IoT network
 * Operational temperature range: -20°C to +35°C
-* Charging temperature range: -30°C to +50°C 
+* Charging temperature range: -30°C to +50°C
+* Dimensions 254x180x111 mm [enclosure TK PS 2518-11-o](https://www.spelsberg.co.uk/industrial-housing/with-/-without-metric-knock-outs/11090801/)
 * Weather resistivity IP 33
 
 
