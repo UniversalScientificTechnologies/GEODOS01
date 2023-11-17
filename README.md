@@ -34,25 +34,25 @@ The [National Atmospheric Observatory Košetice](https://actris-ri.cz/) (NAOK) w
 
 ### Technical parameters
 
-* Detection element: scintillation crystal NaI(Tl) 10 mm in diameter, 20 mm in length, integrated with SiPM detector
+* Detection element: scintillation crystal NaI(Tl) 14 mm in diameter, 20 mm in length, integrated with SiPM detector
 * Power source: solar panel
-* Backup power source: rechargable 18650 Li-ion cell
+* Backup power source: LTO cells
 * Data memory: SD card
 * Record’s content: energy and time of each event above the specified energy (1MeV by default)
 * Record’s periodicity: 10 s (maximal dead time 2 s)
-* Time resolution: 20 us
 * ADC Conversion time: 104 us
 * [Dead time](https://en.wikipedia.org/wiki/Dead_time): 2 us
 * Accuracy of event’s time: 500 ns
-* Energy range: 0.3 to 1 MeV (0,2 MeV resolution). The range could be increased up to 40 MeV by component values selection.
+* Energy range: 0.3 to 18 MeV (deposited energy)
+* Resolution: 0.02 MeV
 * Open-source HW and SW
 * Device status indicator type: LED
-* Uniterrupted measurement campaign interval is limited by SDcard capacity, if sufficient power is available during the whole period
+* Uniterrupted measurement campaign interval: 6 months for 2 GB SD card
 * LoRa connection to IoT network
 * Operational temperature range: -20°C to +35°C
-* Charging temperature range: 0°C to +45°C (the internal backup Li-ion cell is not recharged outside of this range )
+* Charging temperature range: -30°C to +50°C
 * Dimensions 254x180x111 mm [enclosure TK PS 2518-11-o](https://www.spelsberg.co.uk/industrial-housing/with-/-without-metric-knock-outs/11090801/)
-* Weather resistivity IP 65
+* Weather resistivity IP 33
 
 
 ### Device block diagram
