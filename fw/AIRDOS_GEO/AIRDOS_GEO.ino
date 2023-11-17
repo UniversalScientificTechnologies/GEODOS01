@@ -11,7 +11,7 @@ String FWversion = "GEO_1024_v4"; // Output data format (multiple files)
 #define MSG_NO 20 // number of recorded NMEA messages
 #define GPSdelay 24   // number of sending telemetry per one GPS aquisition (12 hour)
 //#define TELEdelay 1   // 
-#define TELEdelay 136   // number of measurements between sending telemetry (30 minutes)
+#define TELEdelay 200   // number of measurements between sending telemetry (40 minutes)
                       
 #define MAXFILESIZE 28000000 // in bytes, 4 MB per day, 28 MB per week, 122 MB per month
 #define MAXCOUNT 53000 // in measurement cycles, 7 479 per day, 52353 per week, 224 369 per month
@@ -113,7 +113,7 @@ TX1/INT1 (D 11) PD3 17|        |24 PC2 (D 18) TCK
 #define SDpower1  1    // PB1
 #define SDpower2  2    // PB2
 #define SDpower3  3    // PB3
-#define SS        4    // PB4
+#define SS        22//4    // PB4
 #define MOSI      5    // PB5
 #define MISO      6    // PB6
 #define SCK       7    // PB7
@@ -132,11 +132,11 @@ uint16_t u_sensor, maximum;
 Adafruit_MPL3115A2 sensor = Adafruit_MPL3115A2();
 uint16_t hits;
 
-// 1290c00806a200921812a000a0000045
-String crystal = "NaI(Tl)-D18x30";
-static const PROGMEM u1_t NWKSKEY[16] = {0xCA,0x89,0x44,0x10,0xDA,0x01,0xA0,0xD5,0x5E,0xBA,0x01,0xBE,0xB0,0x33,0x91,0x85};
-static const u1_t PROGMEM APPSKEY[16] = {0x4F,0x5F,0xB3,0x12,0xE1,0x16,0x0B,0x91,0xAC,0x78,0x11,0xA1,0x6A,0x00,0x72,0x0A};
-static const u4_t DEVADDR = 0x260B06DE; 
+// 1290c00806a20091c057a000a0000036
+String crystal = "NaI(Tl)-D16x30";
+static const PROGMEM u1_t NWKSKEY[16] = {0x3F,0x76,0xD6,0xEB,0xFC,0x9A,0x42,0x2A,0xD9,0x06,0x81,0x59,0x8C,0xAE,0x3E,0x60};
+static const u1_t PROGMEM APPSKEY[16] = {0xD8,0x5F,0x50,0x3E,0x28,0xC2,0xF6,0x61,0xE2,0x81,0x10,0xF5,0xFF,0x90,0x02,0x2B};
+static const u4_t DEVADDR = 0x260B4150; 
 
 /*
 // 1290c00806a200908013a000a00000dd
