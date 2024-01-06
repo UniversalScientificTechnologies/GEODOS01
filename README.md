@@ -1,14 +1,14 @@
-# GEODOS01B - Stand alone ionizing radiation monitor
+# GEODOS01B - Stand-alone ionizing radiation monitor
 
-*Open-source scintillation detector of ionizing radiation. The device can be further modified according to specific requirements. Character of its construction makes it especially suitable for placement into mountaints for in-field measurements*
+*Open-source scintillation detector of ionizing radiation. The device can be further modified according to specific requirements. The character of its construction makes it especially suitable for placement into mountains for in-field measurements*
 
 ![GEODOS01A Installed on Polednik site](/doc/src/img/GEODOS_Polednik_site.jpg)
 
-If you need a fully automatic ionising radiation dosimeter-spectrometer device (with an internal logging and a backup power supply) or device designed for outdoor use without the possibility of connecting to power supply and data network [GEODOS01](https://github.com/UniversalScientificTechnologies/GEODOS01) might be a better option. We can help you in choosing the most suitable device or even design and develop a new one according to you requirements. In either case, reach us using email [support@ust.cz](mailto:support@ust.cz).
+If you need a fully automatic ionizing radiation dosimeter-spectrometer device (with internal logging and a backup power supply) or a device designed for outdoor use without the possibility of connecting to a power supply and data network [GEODOS01](https://github.com/UniversalScientificTechnologies/GEODOS01) might be a better option. We can help you in choosing the most suitable device or even design and develop a new one according to your requirements. In either case, reach us using email [support@ust.cz](mailto:support@ust.cz).
 
 ### Locations
 
-GEODOS devices are mounted on multiple significant locations around Europe at this moment.
+GEODOS devices are mounted in multiple significant locations around Europe at this moment.
 
 #### Chernobyl Red Forest
 
@@ -20,7 +20,7 @@ One GEODOS device is installed in [Chernobyl Red Forest site](https://en.wikiped
 
 #### Šumava mountains
 
-GEODOS devices are installed on multiple locations in Šumava. For example example at [Polednik watch tower](https://cs.wikipedia.org/wiki/Poledn%C3%ADk_(%C5%A0umava)).
+GEODOS devices are installed in multiple locations in Šumava. For example example at [Polednik watch tower](https://cs.wikipedia.org/wiki/Poledn%C3%ADk_(%C5%A0umava)).
 
 ![GEODOS01A Installed on Polednik site](/doc/src/img/GEODOS_Polednik_site.jpg)
 
@@ -48,7 +48,7 @@ The [National Atmospheric Observatory Košetice](https://actris-ri.cz/) (NAOK) w
 * Resolution: 0.02 MeV
 * Open-source HW and SW
 * Device status indicator type: LED
-* Uniterrupted measurement campaign interval: 6 months for 2 GB SD card
+* Uninterrupted measurement campaign interval: 6 months for 2 GB SD card
 * LoRa connection to IoT network
 * Operational temperature range: -20°C to +35°C
 * Charging temperature range: -30°C to +50°C
@@ -70,8 +70,8 @@ The core of the detector is a scintillation crystal with [SiPM detector](https:/
 
 ### Data storage
 
-The primary raw data is stored in SDcard's memory. The IoT network is used for telemetry data transfer, device monitoring (e.g. temperature, humidity, pressure, battery voltage etc.). We are regulary using the [TTN](https://www.thethingsnetwork.org/), but the device could be configured for use with any IoT LoRa based network.
-For remote areas, mounting a IoT gateway in radio range of GEODOS instruments could also be a good option.
+The primary raw data is stored in the SD card's memory. The IoT network is used for telemetry data transfer, and device monitoring (e.g. temperature, humidity, pressure, battery voltage, etc.). We are regularly using the [TTN](https://www.thethingsnetwork.org/), but the device could be configured for use with any IoT LoRa-based network.
+For remote areas, mounting an IoT gateway in the radio range of GEODOS instruments could also be a good option.
 
 
 #### Messages
@@ -93,7 +93,7 @@ $DOS,GEODOS01B,L02,256,379276a,1290c00806a200914056a000a0000086
 
 #### Data message
 
-The output data are in the form of textual [NMEA-0183](https://en.wikipedia.org/wiki/NMEA_0183) like strings. There are the two main message types - Histogram message ($HIST) and events stream message ($HITS). Both of these messages could be combined in data output from the single device.  
+The output data are in the form of textual [NMEA-0183](https://en.wikipedia.org/wiki/NMEA_0183) like strings. There are two main message types - Histogram message ($HIST) and events stream message ($HITS). Both of these messages could be combined in data output from a single device.  
 
 ##### Histogram message
 
@@ -117,7 +117,7 @@ $HITS,20,916,84,2984,37,16386,38,30666,26,38530,48,43043,27,49257,100,53904,43,5
 * `$HITS` - Marking a message with individual events
 * `hit count` - Number of events captured from the last HITS message
 * `time` - Time in seconds from power-up
-* `hit channel` - Channel correspondind to the captured event
+* `hit channel` - Channel corresponding to the captured event
 
 ### Detailed documentation of the used electronic modules
 
