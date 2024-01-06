@@ -1,5 +1,5 @@
 ---
-title: "GEODOS01B"
+title: "GEODOS01"
 name: "AAA"
 excerpt: "Open-source scintillation detector of ionizing radiation. The device can be further modified according to specific requirements. The character of its construction makes it especially suitable for placement into mountains for in-field measurements"
 header:
