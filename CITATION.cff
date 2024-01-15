@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you want to reference this instrument, please cite it as below."
+authors:
+- family-names: "Universal Scientific Technologies s.r.o."
+title: "GEODOS01 - Stand-alone ionizing radiation monitor"
+version: 01A
+doi: 10.5281/zenodo.10511541
+date-released: 2021-04-02
+url: "https://github.com/UniversalScientificTechnologies/GEODOS01"
